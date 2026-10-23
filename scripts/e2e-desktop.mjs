@@ -173,8 +173,12 @@ await section('پایداری نشست', async () => {
 await section('سرویس‌ورکر PWA', async () => {
   const state = await page.evaluate(async () => {
     if (!('serviceWorker' in navigator)) return { supported: false, active: false };
-    const reg = await navigator.serviceWorker.getRegistration();
-    return { supported: true, active: Boolean(reg?.active), scope: reg?.scope };
+    // ثبت سرویس‌ورکر پس از نخستین بارگذاری کامل انجام می‌شود؛ آماده‌شدنش زمان می‌برد.
+    const reg = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((r) => setTimeout(() => r(null), 20_000)),
+    ]);
+    return { supported: true, active: Boolean(reg?.active), scope: reg?.scope ?? null };
   });
   record('سرویس‌ورکر PWA فعال است (پوستهٔ برنامه آفلاین می‌ماند)', state.supported && state.active, JSON.stringify(state));
 });

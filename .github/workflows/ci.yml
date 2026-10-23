@@ -102,6 +102,23 @@ jobs:
           done
           curl -sf http://127.0.0.1:3210/api/health || { cat desktop-run.log; exit 1; }
           node scripts/e2e-desktop.mjs
+      - name: خلاصهٔ نتیجهٔ آزمون میزکار (برای خواندن از API بدون لاگ)
+        if: always()
+        run: |
+          node -e '
+          const fs = require("fs");
+          const file = "docs/testing/desktop-e2e.json";
+          try {
+            const r = JSON.parse(fs.readFileSync(file, "utf8"));
+            const rows = (r.results ?? []).map((x) => `${x.status}: ${x.name} — ${x.detail}`);
+            const text = `${r.status} ${r.passed ?? 0}/${r.total ?? 0}` + (r.reason ? ` (${r.reason})` : "") + " || " + rows.join(" | ");
+            console.log(text);
+            if (r.status !== "PASS") console.log("::error title=desktop-e2e::" + text.slice(0, 900));
+            else console.log("::notice title=desktop-e2e::" + text.slice(0, 900));
+          } catch (e) {
+            console.log("::error title=desktop-e2e::گزارش آزمون پیدا نشد: " + e.message);
+          }
+          '
       - name: آپلود شواهد میزکار
         if: always()
         uses: actions/upload-artifact@v4
