@@ -1,0 +1,32 @@
+{
+  "builtAt": "2026-10-23T22:41:20.425Z",
+  "file": "payesh2-android.apk",
+  "bytes": 144686,
+  "sha256": "83e73f12b94492dae8d18c4341608a6c4239237b7c6bf063553457e4d135e487",
+  "package": "ir.payesh2.app",
+  "versionName": "0.1.0",
+  "versionCode": "1",
+  "minSdk": 24,
+  "targetSdk": 34,
+  "signature": {
+    "certificateSha256": "99d68acee51bbeed38f7f4bdfa46dc2c7778ad0d8469d64fc94e75e1f2dd4e49",
+    "certificateDn": "CN=Payesh 2 Pilot, OU=School, O=Payesh 2, C=IR",
+    "schemes": [
+      "v1=false",
+      "v2=true",
+      "v3=true",
+      "v3.1=false"
+    ],
+    "note": "کلید «پایلوت» در همان اجرای CI ساخته و فقط برای امضای همین بسته استفاده می‌شود؛ کلید انتشار در مخزن نگه‌داری نمی‌شود."
+  },
+  "staticVerification": {
+    "status": "PASS",
+    "passed": 19,
+    "total": 19
+  },
+  "deviceTest": "NOT RUN — اجرا روی دستگاه/شبیه‌ساز اندروید انجام نشده است",
+  "scope": "APK ساخته‌شده با AGP/Gradle و امضاشده با apksigner؛ بازبینی ایستا فقط ساختار/شناسه/امضا را ثابت می‌کند.",
+  "ciRun": "https://github.com/rezaa2544/p3/actions/runs/40035040606",
+  "buildTools": "34.0.0",
+  "jdk": "17"
+}
