@@ -211,7 +211,6 @@ async function main() {
   const fx = await prepare();
 
   const baseHeaders = { cookie, 'x-school-id': schoolId };
-  let writeCounter = 0;
   const results = [];
 
   results.push(
