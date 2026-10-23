@@ -3,6 +3,11 @@ dist/
 build/
 artifacts/*
 !artifacts/.gitkeep
+# تنها دارایی سبک که در مخزن نگه‌داری می‌شود (باینری‌ها بیرون از گیت می‌مانند)
+!artifacts/payesh2-standalone.html
+!artifacts/payesh2-win-x64.json
+!artifacts/payesh2-linux-x64.json
+!artifacts/BUILD.md
 *.log
 .env
 .env.*
