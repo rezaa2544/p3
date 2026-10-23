@@ -61,6 +61,17 @@ node scripts/verify-apk.mjs     # ۱۹/۱۹ PASS
 - بازبینی ایستا: `artifacts/verify-apk.json` (۱۹/۱۹ PASS) · فراداده: `artifacts/payesh2-android.json`
 - اجرا روی دستگاه: **NOT RUN**
 
+### انتشار مجدد در Releases
+
+هر push به `main` کار «انتشار دارایی‌ها» را اجرا می‌کند: هش همهٔ فایل‌های `checksums.json` را
+بررسی می‌کند و سپس همان فایل‌های کامیت‌شده را با `gh release upload --clobber` روی برچسب
+`v0.1.0` می‌گذارد. هیچ چیزی دوباره ساخته نمی‌شود، بنابراین هش‌های بالا پایدار می‌مانند.
+
+```bash
+git push origin main                       # اجرای خودکار انتشار
+gh release view v0.1.0 --json assets       # بررسی واقعی دارایی‌ها
+```
+
 ## بازتولیدپذیری
 
 ZIP‌ها با زمان فایل ثابت و `zip -X` ساخته می‌شوند؛ بنابراین دو بار ساخت پشت‌سرهم، بایت‌به‌بایت
@@ -99,6 +110,6 @@ npm run test:e2e:desktop     # آزمون میزکار با مرورگر واق�
 | مسیر | وضعیت |
 |---|---|
 | دانلود مستقیم از مخزن (raw) | **PASS** |
-| آپلود دارایی در GitHub Release | **BLOCKED** — میزبان `uploads.github.com` از محیط ساخت پاسخ نمی‌دهد |
+| آپلود دارایی در GitHub Release | **PASS** — ۱۲ دارایی در [Release v0.1.0](https://github.com/rezaa2544/p3/releases/tag/v0.1.0) با `state=uploaded` (توسط `.github/workflows/release.yml` روی رانر؛ محیط توسعه به `uploads.github.com` دسترسی ندارد) |
 | امضای دیجیتال EXE | **NOT BUILT** — گواهی تجاری در دسترس نیست؛ SmartScreen ممکن است هشدار بدهد |
 | اجرای EXE روی ویندوز واقعی | **NOT RUN** — بازبینی ایستای PE و اجرای همان کد روی لینوکس انجام شده است |
