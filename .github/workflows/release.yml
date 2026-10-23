@@ -1,79 +1,59 @@
 name: انتشار دارایی‌ها
 
 # چرا این کار لازم است؟
-# محیط توسعه به `uploads.github.com` دسترسی ندارد؛ پس آپلود دارایی‌های باینری در Release از
-# همان مسیر همیشه BLOCKED مانده است. رانر GitHub این دسترسی را دارد، بنابراین ساخت و آپلود
-# دارایی‌ها اینجا انجام می‌شود تا لینک‌های واقعی (نه ادعا) به دست آید.
+# محیط توسعه به `uploads.github.com` دسترسی ندارد (`curl` → SSL_ERROR_SYSCALL)، و توکن موجود
+# اجازهٔ `workflow_dispatch` هم نمی‌دهد؛ بنابراین آپلود دستی دارایی‌ها همیشه BLOCKED می‌ماند.
+# رانر GitHub هر دو دسترسی را دارد، پس همین کار فایل‌های **ثبت‌شده در مخزن** را در Release
+# می‌گذارد. هیچ چیزی دوباره ساخته نمی‌شود تا بایت‌ها و sha256 دقیقاً همان چیزی بماند که در
+# `artifacts/checksums.json` و مستندات آمده است.
 #
-# اجرای دستی:  gh workflow run release.yml --ref main -f tag=v0.1.0
+# اجرا: خودکار روی هر push به main (و اجرای دستی).
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       tag:
-        description: 'برچسب انتشار (مثلاً v0.1.0)'
-        required: true
-        default: 'v0.1.0'
-      notes:
-        description: 'فایل توضیحات انتشار'
+        description: 'برچسب انتشار'
         required: false
-        default: 'docs/releases/v0.1.0.md'
+        default: 'v0.1.0'
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ inputs.tag }}
+  group: release-assets
   cancel-in-progress: false
 
 jobs:
   publish:
-    name: ساخت و آپلود دارایی‌ها
+    name: آپلود دارایی‌های ثبت‌شده در Release
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAG: ${{ inputs.tag }}
+      TAG: ${{ inputs.tag || 'v0.1.0' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - name: نصب وابستگی‌ها
-        run: npm ci
 
-      - name: ساخت وب و API
-        run: npm run build
-
-      - name: ساخت HTML تک‌فایل
-        run: npm run artifact:html
-
-      - name: ساخت EXE ویندوز (SEA، زیرسیستم GUI)
-        run: npm run artifact:exe
-
-      - name: بازبینی ایستای EXE ویندوز
-        run: npm run verify:win
-
-      - name: ساخت باینری لینوکس (همان کد، برای آزمون)
-        run: npm run artifact:exe:linux
-
-      - name: بسته‌بندی و هش‌ها
-        run: node scripts/build-release-zips.mjs
-
-      - name: بررسی صحت APK ثبت‌شده در مخزن
+      - name: بررسی sha256 همهٔ دارایی‌ها پیش از آپلود
         run: |
           node -e '
           const { createHash } = require("crypto");
           const fs = require("fs");
-          const meta = JSON.parse(fs.readFileSync("artifacts/checksums.json", "utf8")).androidApk;
-          const buf = fs.readFileSync(`artifacts/${meta.file}`);
-          const sha = createHash("sha256").update(buf).digest("hex");
-          if (sha !== meta.sha256) {
-            console.log(`::error title=apk::sha256 ناهمخوان: ${sha} != ${meta.sha256}`);
-            process.exit(1);
+          const all = JSON.parse(fs.readFileSync("artifacts/checksums.json", "utf8"));
+          let bad = 0;
+          for (const [key, meta] of Object.entries(all)) {
+            const file = `artifacts/${meta.file}`;
+            if (!fs.existsSync(file)) { console.log(`::error title=asset::${key}: فایل نیست`); bad++; continue; }
+            const buf = fs.readFileSync(file);
+            const sha = createHash("sha256").update(buf).digest("hex");
+            const ok = sha === meta.sha256 && buf.length === meta.bytes;
+            console.log(`::${ok ? "notice" : "error"} title=asset::${meta.file} ${buf.length}B sha256=${sha} ${ok ? "OK" : "MISMATCH"}`);
+            if (!ok) bad++;
           }
-          console.log(`::notice title=apk::APK سالم است (${buf.length} بایت، sha256=${sha})`);
+          if (bad) process.exit(1);
           '
 
       - name: ساخت یا به‌روزرسانی انتشار
@@ -81,20 +61,20 @@ jobs:
           set -euo pipefail
           if ! gh release view "$TAG" > /dev/null 2>&1; then
             gh release create "$TAG" --title "پایش ۲ — نسخه ${TAG#v}" \
-              --notes-file "${{ inputs.notes }}" --target "$GITHUB_SHA"
+              --notes-file docs/releases/v0.1.0.md --target "$GITHUB_SHA"
           fi
           gh release upload "$TAG" --clobber \
             artifacts/payesh2-win-x64.zip \
-            artifacts/payesh2.exe \
             artifacts/payesh2-standalone-html.zip \
             artifacts/payesh2-standalone.html \
             artifacts/payesh2-android.apk \
-            artifacts/payesh2 \
             artifacts/checksums.json \
             artifacts/payesh2-win-x64.json \
             artifacts/payesh2-linux-x64.json \
             artifacts/payesh2-win-static.json \
             artifacts/payesh2-android.json \
+            artifacts/payesh2-android-verify.txt \
+            artifacts/payesh2-android-badging.txt \
             artifacts/BUILD.md
 
       - name: گزارش دارایی‌های منتشرشده
