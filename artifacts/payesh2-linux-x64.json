@@ -1,10 +1,10 @@
 {
-  "builtAt": "2026-10-23T17:07:09.793Z",
-  "buildId": "c0e95936dfe4",
+  "builtAt": "2026-10-23T18:33:35.962Z",
+  "buildId": "3e1a7d20c2dc",
   "target": "linux-x64",
   "nodeVersion": "26.12.1",
   "file": "payesh2",
   "bytes": 169151680,
-  "sha256": "3047a6d4ce986c1e9eb18f7b49475429e7f89bdebeed4b487b43e7177b2557aa",
+  "sha256": "af59452db1770eb5312f79cb2c543591facc6a2d44f0800a26613b8cff0ea6fa",
   "host": "linux-x64"
 }
