@@ -51,7 +51,7 @@
 | دارایی‌های GitHub Release | PASS (پس از ایجاد release) | فایل‌ها ساخته و هش شدند؛ لینک در `docs/releases/v0.1.0.md` |
 | APK اندروید | **BLOCKED** | بدون Android SDK/JDK و بدون دسترسی به دانلود آن‌ها |
 | نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | نیازمند NSIS/WiX + امضا؛ نسخه‌ی تک‌فایل جایگزین شد |
-| اجرای CI | **UNKNOWN** | فایل `.github/workflows/ci.yml` وجود دارد ولی اجرای آن در این محیط قابل تأیید نبود |
+| اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
 
 ## ۴. باگ واقعی کشف‌شده و رفع‌شده (نمونه‌ی صداقت شواهد)
 
