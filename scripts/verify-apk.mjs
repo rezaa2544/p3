@@ -133,8 +133,8 @@ if (aapt2) {
     aaptErr = String(e.message ?? e).slice(0, 200);
   }
 }
-// قالب badging بین نسخه‌های build-tools کمی تفاوت دارد؛ فاصله بعد از «:» اختیاری است
-const field = (name) => (badging.match(new RegExp(`${name}\\s*:\\s*'([^']*)'`)) ?? [])[1] ?? '';
+// قالب badging بین نسخه‌های build-tools تفاوت دارد: «name='…'» و «name: '…'» هر دو رخ می‌دهد
+const field = (name) => (badging.match(new RegExp(`${name}\\s*[:=]\\s*'([^']*)'`)) ?? [])[1] ?? '';
 
 /**
  * سطوح SDK هم در badging و هم در درخت XML مانیفست خوانده می‌شوند؛ نسخه‌های مختلف
