@@ -48,7 +48,9 @@
 | بازبینی ایستای فایل اجرایی ویندوز | `npm run verify:win` → ۷/۷ (PE32+ x64، SEA شامل HTML) — `artifacts/payesh2-win-static.json` | PASS |
 | اجرای ویندوزی روی ویندوز واقعی | باینری ساخته شد، اجرا ممکن نبود | NOT RUN |
 | اجرای بسته‌بندی‌شده (همان کد ویندوز) روی لینوکس | `artifacts/payesh2` → health ok، `/standalone.html` ۲۰۰، راه‌اندازی اولیه با رمز تصادفی، ورود موفق، صفر خطای کنسول | PASS (لینوکس) |
-| آزمون بار | `docs/testing/load-report-2026-10-23.json` | PASS (مشورتی، روی PGlite) |
+| آزمون بار | `docs/testing/load-report-real-pg-2026-10-23.json` — PostgreSQL 16.2، ۵ سناریو، ۰ خطا/۰ non-2xx | PASS (روی PostgreSQL واقعی، یک ماشین) |
+| مهاجرت و اجرای کامل روی PostgreSQL واقعی | PostgreSQL 16.2، مهاجرت ۰۰۱+۰۰۲، E2E مرورگری ۲۳/۲۳ — `docs/testing/04-real-postgres-restore.md` | PASS |
+| بازیابی از پشتیبان روی سرور جداگانه | پشتیبان ۳۲ جدول/۱۱۸٬۲۱۱ ردیف → بازیابی روی نمونه‌ی دوم PostgreSQL با شمارش یکسان و ورود موفق (۷/۷) | PASS |
 
 ## ۳. انتشار و استقرار
 
@@ -58,8 +60,8 @@
 | ساخت دارایی‌ها (EXE/Linux/HTML) | PASS | ساخته و هش شدند؛ `artifacts/BUILD.md` |
 | دانلود مستقیم دارایی‌ها از مخزن | **PASS** | `artifacts/payesh2-standalone-html.zip`، `artifacts/payesh2-win-x64.zip`، `artifacts/payesh2-standalone.html` با لینک `raw` (هش‌ها در `artifacts/BUILD.md`) |
 | آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط پاسخ نمی‌دهد (بررسی `curl` → 000) |
-| APK اندروید | **BLOCKED** | بدون Android SDK/JDK و بدون دسترسی به دانلود آن‌ها |
-| نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | نیازمند NSIS/WiX + امضا؛ نسخه‌ی تک‌فایل جایگزین شد |
+| APK اندروید | **BLOCKED** | بازبینی ۲۰۲۶-۱۰-۲۳: `java`/`javac`/`sdkmanager` نصب نیستند، `dl.google.com` و `uploads.github.com` از این محیط پاسخ نمی‌دهند (`curl` → 000)؛ ساخت یا دانلود APK ممکن نیست |
+| نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | بازبینی ۲۰۲۶-۱۰-۲۳: NSIS/WiX نصب نیست، مخزن بسته‌ی سیستم (`deb.debian.org`) و PyPI بسته‌ی `nsis` را عرضه نمی‌کنند؛ نسخه‌ی تک‌فایل بدون نصب جایگزین شد |
 | اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
 
 ## ۴. باگ واقعی کشف‌شده و رفع‌شده (نمونه‌ی صداقت شواهد)
@@ -76,8 +78,9 @@
 **READY FOR LIMITED PILOT**
 
 دلیل: کارکردهای اصلی (حضور، نمره، کارنامه، تکلیف، اطلاعیه، گزارش، نقش‌ها، آفلاین، پشتیبان)
-با ۱۲۹ آزمون خودکار (۹۶ API + ۳۳ وب) و ۳۰ بررسی E2E در مرورگر واقعی (۷ تک‌فایل + ۲۳ جریان
-محصول، شامل قطع واقعی شبکه) تأیید شده‌اند. سه چیز مانع «READY FOR USE» است و به‌صراحت
+با ۱۲۹ آزمون خودکار (۹۶ API + ۳۳ وب)، ۳۰ بررسی E2E در مرورگر واقعی (۷ تک‌فایل + ۲۳ جریان
+محصول، شامل قطع واقعی شبکه) و اجرای کامل روی PostgreSQL 16.2 با آزمون بار و بازیابی روی
+سرور جداگانه تأیید شده‌اند. سه چیز مانع «READY FOR USE» است و به‌صراحت
 اعلام می‌شود:
 
 1. هیچ استقرار اینترنتی با TLS و دامنه انجام نشده (BLOCKED).
@@ -101,6 +104,8 @@
 | گزارش E2E جریان‌های محصول | `docs/testing/product-e2e.json` (۲۳/۲۳ PASS) |
 | گزارش E2E نسخه‌ی تک‌فایل | `docs/testing/standalone-e2e.json` (۷/۷ PASS) |
 | بازبینی ایستای EXE ویندوز | `artifacts/payesh2-win-static.json` (۷/۷ PASS، اجرا NOT RUN) |
+| آزمون بار روی PostgreSQL واقعی | `docs/testing/load-report-real-pg-2026-10-23.json` |
+| بازیابی از پشتیبان | `docs/testing/04-real-postgres-restore.md` |
 | فراداده و هش دارایی‌ها | `artifacts/BUILD.md`, `artifacts/payesh2-*.json` |
 
 هر ادعایی که در این سند PASS دارد، در تاریخ ۲۰۲۶-۱۰-۲۳ روی همین مخزن اجرا شده است؛ ادعاهای

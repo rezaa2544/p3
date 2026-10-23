@@ -221,7 +221,8 @@ try {
     // تأیید از سمت سرور: GET مستقیم API با همان نشست
     const fromServer = await admin.evaluate(
       async (classId, period) => {
-        const day = new Date().toISOString().slice(0, 10);
+        // تاریخ باید همان تاریخ تهران باشد که رابط کاربری استفاده می‌کند (نه UTC)
+        const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tehran' }).format(new Date());
         const res = await fetch(`/api/attendance?classId=${classId}&day=${day}`, { credentials: 'include' });
         if (!res.ok) return { ok: false, status: res.status };
         const data = await res.json();
