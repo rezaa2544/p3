@@ -24,9 +24,9 @@
 
 | قالب | لینک دانلود مستقیم | حجم | وضعیت |
 |---|---|---|---|
-| **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۳ KB | ✅ ساخته و بازبینی شد (ZIP شامل HTML + راهنما) |
-| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ ساخته شد؛ اجرا روی ویندوز واقعی هنوز آزموده نشده (NOT RUN) |
-| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۷۷ KB | ✅ صفر ارجاع بیرونی، رندر در jsdom تأیید شد |
+| **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
+| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ ساخته شد و `/standalone.html` دارد؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
+| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۲ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
 | اپلیکیشن اندروید (APK) | — | — | ⛔ **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
 | آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
 | نصب‌کننده‌ی ویندوز (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — نسخه‌ی تک‌فایل جایگزین شد |
@@ -35,9 +35,9 @@
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
-payesh2-win-x64.zip          baaf83f8fe27fae7a876c24bc09fdda9b78de5f7774902867330ca237a82dcac
-payesh2-standalone-html.zip  461404467c429b9d39997baee0cc39d911c7a8fef3966af9cde795291180734e
-payesh2-standalone.html      3672f2a36b76090030686e95cc6a795d8bfa13a9046fb36092080536097f3f79
+payesh2-win-x64.zip          ff13e3902bb12da8658b233670efaa0588949c2245d88aff402bd99d2526f9c1
+payesh2-standalone-html.zip  870e4597d31d9244b0f92983c7d3302f685d90d6ee029dbdff784fe26206f6b8
+payesh2-standalone.html      7b2de672388d1e147bb65f1336ff61b523af8db5e6392b57cc924a9858bff1ec
 ```
 
 > چرا ZIP و نه EXE خام؟ حد مجاز هر فایل در گیت‌هاب ۱۰۰MB است و EXE خام ۱۱۹MB است؛ ZIP آن
@@ -93,13 +93,25 @@ npm run dev                      # API: 3000 ، وب: 5173
 
 ورود نمونه‌ی توسعه: `admin` / `Payesh1404a` (فقط داده‌ی دمو).
 
-### ۴) HTML تک‌فایل
+### ۴) HTML تک‌فایل — چگونه درست استفاده شود
 
-[`payesh2-standalone-html.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)
-را دانلود و باز کنید. `payesh2-standalone.html` یک فایل خودبسنده است (بدون هیچ فایل جانبی) اما برای کار کردن به
-API پایش ۲ در **همان مبدأ** نیاز دارد؛ بنابراین آن را از خود سرور پایش ۲ باز کنید یا آن را
-روی میزبانی قرار دهید که `/api` را به سرور پایش ۲ پروکسی می‌کند. باز کردن مستقیم با
-`file://` فقط صفحه‌ی ورود را نشان می‌دهد (بدون API).
+ZIP را باز کنید و **همین فایل را از خود سرور پایش ۲ باز کنید**:
+
+```text
+http://localhost:3000/standalone.html      ← همین فایل، با دسترسی کامل به API
+http://localhost:3000/                     ← نسخه‌ی کامل برنامه (PWA)
+```
+
+دلیل: ورود با کوکی نشست و توکن CSRF کار می‌کند و مبدأ صفحه باید همان سرور باشد. اگر فایل را
+با دابل‌کلیک (`file://`) باز کنید، مرورگر مبدأ `null` می‌دهد و ارتباط با API را مسدود می‌کند؛
+در این حالت برنامه به‌جای فرم ورودِ بی‌اثر، **صفحه‌ی راهنما** با توضیح و دکمه‌ی رفتن به سرور
+نشان می‌دهد.
+
+> فایل خودبسنده است (CSS، JS و آیکون داخل خودش؛ صفر ارجاع بیرونی) و اسکریپت آن به‌صورت
+> **کلاسیک** جاسازی شده تا در همه‌ی مرورگرها اجرا شود. یک «نگهبان بوت» هم دارد: اگر برنامه
+> تا ۶ ثانیه بالا نیاید، پیام فارسی با راهنمای رفع مشکل نمایش داده می‌شود (هرگز صفحه‌ی سفید).
+> آزمون مرورگر واقعی این مسیرها: `npm run test:e2e:standalone` — نتیجه در
+> `docs/testing/standalone-e2e.json` و اسکرین‌شات‌ها در `docs/testing/evidence/`.
 
 ---
 

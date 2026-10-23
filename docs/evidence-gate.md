@@ -28,7 +28,8 @@
 | مهاجرت با checksum | `db.ts` → `migrate` | `test/migration.test.ts` | PASS |
 | راه‌اندازی اولیه بدون رمز پیش‌فرض | `services/first-run.ts` | `test/first-run.test.ts` (۳) | PASS |
 | نسخه‌ی تک‌فایل ویندوزی/لینوکسی | `scripts/build-exe.mjs` | اجرای باینری لینوکسی و ورود واقعی | PASS (لینوکس) / ویندوز NOT RUN |
-| HTML تک‌فایل | `scripts/build-standalone-html.mjs` | استخراج JS + رندر در jsdom | PASS (jsdom) / مرورگر NOT RUN |
+| HTML تک‌فایل (باز شدن با file://) | `apps/web/src/pages/StandaloneGuide.tsx`, `apps/web/src/main.tsx` | `StandaloneGuide.test.tsx` (۳) + E2E مرورگر واقعی | PASS |
+| HTML تک‌فایل (سرو از سرور و ورود کامل) | `apps/api/src/app.ts` → `/standalone.html` | `standalone.test.ts` (۳) + E2E مرورگر واقعی (۷/۷) | PASS |
 
 ## ۲. کیفیت
 
@@ -39,7 +40,8 @@
 | typecheck هر دو بسته | `npm run typecheck` بدون خطا | PASS |
 | lint | `eslint .` بدون خطا | PASS |
 | وابستگی‌های تولید بدون آسیب‌شناسی شناخته‌شده | `npm audit --omit=dev` → 0 | PASS (در تاریخ ساخت) |
-| آزمون مرورگری E2E | مرورگری در محیط نیست، دانلود مسدود | NOT RUN |
+| آزمون مرورگری E2E (نسخه‌ی HTML تک‌فایل) | Chromium headless ۱۳۱، ۷/۷ PASS — `docs/testing/standalone-e2e.json` | PASS |
+| آزمون مرورگری E2E (کل جریان‌های محصول) | فقط مسیر standalone پوشش داده شد | NOT RUN |
 | اجرای ویندوزی روی ویندوز | باینری ساخته شد، اجرا ممکن نبود | NOT RUN |
 | آزمون بار | `docs/testing/load-report-2026-10-23.json` | PASS (مشورتی، روی PGlite) |
 

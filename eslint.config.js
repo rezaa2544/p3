@@ -33,6 +33,18 @@ export default tseslint.config(
     },
   },
   {
+    // کدهایی که به‌صورت رشته به page.evaluate داده می‌شوند داخل مرورگر اجرا می‌شوند
+    files: ['scripts/e2e-*.mjs'],
+    languageOptions: {
+      globals: {
+        document: 'readonly',
+        location: 'readonly',
+        window: 'readonly',
+        HTMLScriptElement: 'readonly',
+      },
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',

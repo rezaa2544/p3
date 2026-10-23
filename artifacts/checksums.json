@@ -1,0 +1,17 @@
+{
+  "standaloneHtmlZip": {
+    "file": "payesh2-standalone-html.zip",
+    "bytes": 117172,
+    "sha256": "870e4597d31d9244b0f92983c7d3302f685d90d6ee029dbdff784fe26206f6b8"
+  },
+  "standaloneHtml": {
+    "file": "payesh2-standalone.html",
+    "bytes": 391727,
+    "sha256": "7b2de672388d1e147bb65f1336ff61b523af8db5e6392b57cc924a9858bff1ec"
+  },
+  "winZip": {
+    "file": "payesh2-win-x64.zip",
+    "bytes": 45723117,
+    "sha256": "ff13e3902bb12da8658b233670efaa0588949c2245d88aff402bd99d2526f9c1"
+  }
+}

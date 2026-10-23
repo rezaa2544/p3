@@ -22,6 +22,8 @@
     "build:standalone": "npm --workspace apps/web exec -- vite build --mode standalone",
     "artifact:html": "npm run build:standalone && node scripts/build-standalone-html.mjs",
     "artifact:exe": "node scripts/build-exe.mjs --target win-x64",
+    "test:e2e:standalone": "node scripts/e2e-standalone.mjs",
+    "release:assets": "npm run build && npm run artifact:html && npm run artifact:exe && node scripts/build-release-zips.mjs",
     "start": "npm --workspace apps/api run start",
     "lint": "eslint .",
     "typecheck": "npm --workspace apps/api run typecheck && npm --workspace apps/web run typecheck",
@@ -34,6 +36,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
+    "postject": "^1.0.0-alpha.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4"
   }

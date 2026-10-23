@@ -73,10 +73,22 @@ export default defineConfig(({ mode }) => {
   build: {
     outDir: standalone ? 'dist-standalone' : 'dist',
     sourcemap: false,
-    target: 'es2022',
+    // خروجی تک‌فایل باید اسکریپت کلاسیک (IIFE) باشد تا در file:// و مرورگرهای قدیمی‌تر
+    // هم اجرا شود؛ اسکریپت module در برخی حالت‌ها اجرا نمی‌شد و صفحه سفید می‌داد.
+    target: standalone ? 'es2018' : 'es2022',
     cssCodeSplit: !standalone,
+    modulePreload: standalone ? false : undefined,
     ...(standalone
-      ? { rollupOptions: { output: { inlineDynamicImports: true, entryFileNames: 'app.js', assetFileNames: 'app.[ext]' } } }
+      ? {
+          rollupOptions: {
+            output: {
+              format: 'iife' as const,
+              inlineDynamicImports: true,
+              entryFileNames: 'app.js',
+              assetFileNames: 'app.[ext]',
+            },
+          },
+        }
       : {}),
   },
   };
