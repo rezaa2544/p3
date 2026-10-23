@@ -8,20 +8,20 @@
 | یکپارچه‌ی API | Vitest + `app.inject()` + PGlite واقعی | ۱۰ فایل، همه‌ی مسیرهای حساس، RBAC، RLS، idempotency، پشتیبان |
 | رابط کاربری | Vitest + jsdom + `fake-indexeddb` | کامپوننت‌های پایه، API client، صف آفلاین |
 | بار | autocannon + هارنس اختصاصی (`apps/api/test/load/run-load.mjs`) | ۵ سناریوی مسیر داغ |
-| مرورگر واقعی (E2E) | — | **NOT RUN** (مرورگری در این محیط نصب نیست و دانلود Playwright مسدود است) |
+| مرورگر واقعی (E2E) | Chromium headless ۱۳۱ + puppeteer-core | مسیر نسخه‌ی HTML تک‌فایل: ۷/۷ PASS (`docs/testing/02-standalone-html.md`). سایر جریان‌های محصول: **NOT RUN** |
 
 ## ۲. نتیجه‌ی اجرا (۲۰۲۶-۱۰-۲۳)
 
 ```
-apps/api  →  Test Files 11 passed | Tests 87 passed   (vitest run)
-apps/web  →  Test Files  3 passed | Tests 29 passed   (vitest run)
+apps/api  →  Test Files 12 passed | Tests 90 passed   (vitest run)
+apps/web  →  Test Files  4 passed | Tests 32 passed   (vitest run)
 eslint    →  0 error
 tsc       →  بدون خطا (apps/api و apps/web)
 npm audit --omit=dev → 0 vulnerabilities
 ```
 
 تفکیک فایل‌های API: auth 11، access 13، attendance 13، grades 9، security 9، backup 5،
-units 8، migration 4، comms 6، offline 6، first-run 3 (مجموع ۸۷).
+units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3 (مجموع ۹۰).
 
 آزمون‌های شاخصی که «ادعا» را پشتیبانی می‌کنند:
 

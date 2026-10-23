@@ -120,6 +120,16 @@ for (const f of await walk(path.join(root, 'apps/api/migrations'))) {
 for (const f of await walk(path.join(root, 'apps/web/dist'))) {
   assets.set(`web/${f.rel}`, f.full);
 }
+// نسخه HTML تک‌فایل (اختیاری) تا سرور بسته‌بندی‌شده هم /standalone.html داشته باشد
+const standalonePath = path.join(root, 'artifacts/payesh2-standalone.html');
+let hasStandalone = false;
+try {
+  await stat(standalonePath);
+  assets.set('payesh2-standalone.html', standalonePath);
+  hasStandalone = true;
+} catch {
+  console.warn('• هشدار: artifacts/payesh2-standalone.html نیست؛ نسخه‌ی بسته‌بندی‌شده /standalone.html نخواهد داشت');
+}
 assets.set('BUILD_ID', null);
 const buildIdPath = path.join(work, 'build-id.txt');
 await writeFile(buildIdPath, buildId);
@@ -181,6 +191,7 @@ process.env.UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(home, 'uploads');
 process.env.PGLITE_DIR = dataDir;
 process.env.PGLITE_WASM = path.join(runtime, 'pglite.wasm');
 process.env.PGLITE_DATA = path.join(runtime, 'pglite.data');
+${hasStandalone ? "process.env.STANDALONE_HTML = path.join(runtime, 'payesh2-standalone.html');" : ''}
 process.env.SESSION_SECRET = process.env.SESSION_SECRET || ensureSecret(home);
 process.env.PORT = process.env.PORT || '3000';
 process.env.HOST = process.env.HOST || '0.0.0.0';

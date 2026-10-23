@@ -4,6 +4,7 @@ import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { config } from './config.js';
 import { AppError } from './errors.js';
@@ -148,6 +149,38 @@ export async function buildApp(opts: { logger?: boolean } = {}): Promise<Fastify
   );
 
   const webDist = process.env.WEB_DIST ?? path.resolve(process.cwd(), '../web/dist');
+
+  /**
+   * نسخه‌ی «HTML تک‌فایل» را از خود سرور سرو می‌کند تا با مبدأ درست (و دسترسی به /api)
+   * باز شود. باز کردن همان فایل با file:// کار نمی‌کند (مبدأ null، بدون کوکی نشست)،
+   * بنابراین کاربر باید آن را از همین آدرس باز کند.
+   */
+  app.get('/standalone.html', async (req, reply) => {
+    // اگر STANDALONE_HTML صریح تنظیم شده باشد فقط همان مسیر معتبر است (پیکربندی صریح
+    // بر حدس مسیر پیشی می‌گیرد)؛ وگرنه مسیرهای متعارف مخزن/بسته بررسی می‌شوند.
+    const explicit = process.env.STANDALONE_HTML;
+    const candidates = explicit
+      ? [explicit]
+      : [
+          path.resolve(process.cwd(), '../../artifacts/payesh2-standalone.html'),
+          path.resolve(process.cwd(), 'artifacts/payesh2-standalone.html'),
+          path.resolve(process.cwd(), 'payesh2-standalone.html'),
+        ];
+    const found = candidates.find((p) => existsSync(p));
+    if (!found) {
+      return reply.status(404).type('text/html; charset=utf-8').send(`<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>پایش ۲ — نسخه تک‌فایل</title></head>
+<body style="font-family:system-ui;padding:24px;line-height:2">
+<h1>نسخه‌ی HTML تک‌فایل روی این سرور نیست</h1>
+<p>آن را با <code>npm run artifact:html</code> بسازید یا از <a href="/">نسخه‌ی کامل برنامه</a> استفاده کنید.</p>
+</body></html>`);
+    }
+    return reply
+      .header('cache-control', 'no-store')
+      .type('text/html; charset=utf-8')
+      .send(await readFile(found, 'utf8'));
+  });
+
   if (existsSync(path.join(webDist, 'index.html'))) {
     await app.register(fastifyStatic, { root: webDist, prefix: '/', wildcard: false });
     app.get('/*', async (req, reply) => {
