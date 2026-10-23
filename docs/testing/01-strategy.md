@@ -5,23 +5,23 @@
 | سطح | ابزار | دامنه |
 |---|---|---|
 | واحد | Vitest | محاسبه‌ی نمره/میانگین، تاریخ تهران، اعتبارسنجی، رمز، TOTP، صف آفلاین |
-| یکپارچه‌ی API | Vitest + `app.inject()` + PGlite واقعی | ۱۰ فایل، همه‌ی مسیرهای حساس، RBAC، RLS، idempotency، پشتیبان |
-| رابط کاربری | Vitest + jsdom + `fake-indexeddb` | کامپوننت‌های پایه، API client، صف آفلاین |
+| یکپارچه‌ی API | Vitest + `app.inject()` + PGlite واقعی | ۱۳ فایل، همه‌ی مسیرهای حساس، RBAC، RLS، idempotency، پشتیبان، سرو SPA |
+| رابط کاربری | Vitest + jsdom + `fake-indexeddb` | کامپوننت‌های پایه (شامل پایداری فوکوس مودال)، API client، صف آفلاین، راهنمای تک‌فایل |
 | بار | autocannon + هارنس اختصاصی (`apps/api/test/load/run-load.mjs`) | ۵ سناریوی مسیر داغ |
-| مرورگر واقعی (E2E) | Chromium headless ۱۳۱ + puppeteer-core | مسیر نسخه‌ی HTML تک‌فایل: ۷/۷ PASS (`docs/testing/02-standalone-html.md`). سایر جریان‌های محصول: **NOT RUN** |
+| مرورگر واقعی (E2E) | Chromium headless ۱۳۱ + puppeteer-core | نسخه‌ی HTML تک‌فایل ۷/۷ PASS (`02-standalone-html.md`) و کل جریان‌های محصول ۲۳/۲۳ PASS (`03-product-e2e.md`) شامل قطع واقعی شبکه و PWA آفلاین |
 
 ## ۲. نتیجه‌ی اجرا (۲۰۲۶-۱۰-۲۳)
 
 ```
-apps/api  →  Test Files 12 passed | Tests 90 passed   (vitest run)
-apps/web  →  Test Files  4 passed | Tests 32 passed   (vitest run)
+apps/api  →  Test Files 13 passed | Tests 96 passed   (vitest run)
+apps/web  →  Test Files  4 passed | Tests 33 passed   (vitest run)
 eslint    →  0 error
 tsc       →  بدون خطا (apps/api و apps/web)
 npm audit --omit=dev → 0 vulnerabilities
 ```
 
-تفکیک فایل‌های API: auth 11، access 13، attendance 13، grades 9، security 9، backup 5،
-units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3 (مجموع ۹۰).
+تفکیک فایل‌های API: auth 11، access 13، attendance 15، grades 9، security 9، backup 5،
+units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-static 4 (مجموع ۹۶).
 
 آزمون‌های شاخصی که «ادعا» را پشتیبانی می‌کنند:
 

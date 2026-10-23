@@ -193,6 +193,71 @@ describe('حضور و غیاب', () => {
     expect(same.status).toBe(400);
   });
 
+  it('تاریخچه‌ی اصلاح‌ها از مسیر API خوانده می‌شود (و برای رکورد ناشناس ۴۰۴)', async () => {
+    const admin = await env.login('adminA');
+    const created = await record(admin, {
+      classId: env.fx.classA1,
+      day: todayTehran(),
+      periodNo: 2,
+      records: [{ studentId: env.fx.student1, status: 'present' }],
+    });
+    expect(created.status).toBe(201);
+    const id = created.json.ids[0];
+
+    const empty = await env.request('GET', `/api/attendance/${id}/revisions`, { auth: admin });
+    expect(empty.status).toBe(200);
+    expect(empty.json.items).toEqual([]);
+
+    await env.request('PUT', `/api/attendance/${id}`, {
+      auth: admin,
+      body: { status: 'late', reason: 'ورود با تأخیر ۱۵ دقیقه' },
+    });
+    await env.request('PUT', `/api/attendance/${id}`, {
+      auth: admin,
+      body: { status: 'excused', reason: 'تأیید موجه توسط معاون' },
+    });
+
+    const list = await env.request('GET', `/api/attendance/${id}/revisions`, { auth: admin });
+    expect(list.status).toBe(200);
+    expect(list.json.items).toHaveLength(2);
+    expect(list.json.items[0].new_status).toBe('excused');
+    expect(list.json.items[1].old_status).toBe('present');
+    expect(list.json.items[0].changed_by_name).toBeTruthy();
+    expect(list.json.items[0].reason).toContain('موجه');
+
+    const teacher = await env.login('teacher1');
+    const teachersView = await env.request('GET', `/api/attendance/${id}/revisions`, { auth: teacher });
+    expect(teachersView.status).toBe(200);
+
+    const missing = await env.request('GET', `/api/attendance/00000000-0000-4000-8000-000000000000/revisions`, {
+      auth: admin,
+    });
+    expect(missing.status).toBe(404);
+  });
+
+  it('تاریخ رکوردها به‌صورت YYYY-MM-DD برمی‌گردد (نه رشته‌ی کامل ISO)', async () => {
+    const admin = await env.login('adminA');
+    const day = todayTehran();
+    const created = await record(admin, {
+      classId: env.fx.classA1,
+      day,
+      periodNo: 12,
+      records: [{ studentId: env.fx.student1, status: 'present' }],
+    });
+    expect(created.status).toBe(201);
+
+    const list = await env.request('GET', `/api/attendance?classId=${env.fx.classA1}&day=${day}`, { auth: admin });
+    expect(list.status).toBe(200);
+    const row = list.json.items.find((r: { period_no: number }) => Number(r.period_no) === 12);
+    expect(row).toBeTruthy();
+    expect(row.day).toBe(day);
+
+    const student = await env.login('student1');
+    const mine = await env.request('GET', `/api/me/attendance?from=${day}&to=${day}`, { auth: student });
+    expect(mine.status).toBe(200);
+    if (mine.json.items.length > 0) expect(mine.json.items[0].day).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
   it('اصلاح رکورد مدرسه دیگر ۴۰۴ می‌دهد', async () => {
     const admin = await env.login('adminA');
     const created = await record(admin, {

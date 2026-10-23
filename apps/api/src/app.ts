@@ -6,6 +6,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { AppError } from './errors.js';
 import { assertCsrf, resolveAuth } from './security/session.js';
@@ -148,7 +149,22 @@ export async function buildApp(opts: { logger?: boolean } = {}): Promise<Fastify
     { prefix: '/api' },
   );
 
-  const webDist = process.env.WEB_DIST ?? path.resolve(process.cwd(), '../web/dist');
+  /**
+   * مسیر پوشه‌ی ساخته‌شده‌ی رابط کاربری. مسیر نسبی به cwd وابسته بود و اگر سرور از
+   * ریشه‌ی مخزن اجرا می‌شد (`node apps/api/dist/server.js`) پیدا نمی‌شد و همه‌ی مسیرها
+   * ۴۰۴ می‌دادند (از جمله بازکردن مستقیم /login). اکنون مسیر بر اساس محل خود فایل
+   * محاسبه می‌شود و چند مسیر متعارف هم بررسی می‌شود.
+   */
+  const here = path.dirname(fileURLToPath(import.meta.url)); // …/apps/api/dist یا …/src
+  const webDist =
+    [
+      process.env.WEB_DIST,
+      path.resolve(here, '../../web/dist'),
+      path.resolve(here, '../../../apps/web/dist'),
+      path.resolve(process.cwd(), 'apps/web/dist'),
+      path.resolve(process.cwd(), '../web/dist'),
+    ].find((candidate) => candidate && existsSync(path.join(candidate, 'index.html'))) ??
+    path.resolve(here, '../../web/dist');
 
   /**
    * نسخه‌ی «HTML تک‌فایل» را از خود سرور سرو می‌کند تا با مبدأ درست (و دسترسی به /api)
@@ -162,7 +178,8 @@ export async function buildApp(opts: { logger?: boolean } = {}): Promise<Fastify
     const candidates = explicit
       ? [explicit]
       : [
-          path.resolve(process.cwd(), '../../artifacts/payesh2-standalone.html'),
+          path.resolve(here, '../../../artifacts/payesh2-standalone.html'),
+          path.resolve(here, '../../../../artifacts/payesh2-standalone.html'),
           path.resolve(process.cwd(), 'artifacts/payesh2-standalone.html'),
           path.resolve(process.cwd(), 'payesh2-standalone.html'),
         ];
@@ -185,6 +202,13 @@ export async function buildApp(opts: { logger?: boolean } = {}): Promise<Fastify
     await app.register(fastifyStatic, { root: webDist, prefix: '/', wildcard: false });
     app.get('/*', async (req, reply) => {
       if (req.url.startsWith('/api')) return reply.callNotFound();
+      /**
+       * درخواست‌هایی که به فایل (نه مسیر صفحه) شبیه‌اند نباید index.html بگیرند؛
+       * وگرنه مرورگر به‌جای ۴۰۴، فایل HTML را با MIME اشتباه به‌عنوان ماژول JS
+       * بارگیری می‌کند و خطای «Expected a JavaScript module script» می‌دهد.
+       */
+      const pathname = req.url.split('?')[0] ?? '';
+      if (pathname.startsWith('/assets/') || /\.[A-Za-z0-9]{1,16}$/.test(pathname)) return reply.callNotFound();
       return reply.sendFile('index.html', { maxAge: 0 });
     });
   } else {

@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-23T20:25:31.314Z",
+  "file": "artifacts/payesh2.exe",
+  "bytes": 124650496,
+  "sha256": "c15dc6bb33ca40606e5dc0c54f38e0ba8f1432febb8760ff8d94070bb9e39159",
+  "architecture": "win32-x64",
+  "status": "PASS",
+  "scope": "بازبینی ایستای فایل؛ اجرا روی ویندوز واقعی انجام نشده است (NOT RUN)",
+  "checks": [
+    {
+      "name": "فایل با امضای MZ شروع می‌شود (فایل اجرایی ویندوز)",
+      "status": "PASS",
+      "detail": "bytes 77,90"
+    },
+    {
+      "name": "امضای PE\\0\\0 در محل e_lfanew",
+      "status": "PASS",
+      "detail": "offset 120, signature \"PE\\u0000\\u0000\""
+    },
+    {
+      "name": "معماری x86-64 (IMAGE_FILE_MACHINE_AMD64)",
+      "status": "PASS",
+      "detail": "machine=0x8664"
+    },
+    {
+      "name": "قالب PE32+ (۶۴ بیتی)",
+      "status": "PASS",
+      "detail": "magic=0x20b"
+    },
+    {
+      "name": "زیرسیستم ویندوز معتبر است",
+      "status": "PASS",
+      "detail": "CUI (کنسول)"
+    },
+    {
+      "name": "نام دارایی HTML تک‌فایل داخل باندل هست",
+      "status": "PASS",
+      "detail": "«payesh2-standalone.html»"
+    },
+    {
+      "name": "محتوای HTML تک‌فایل در فایل اجرایی جاسازی شده است",
+      "status": "PASS",
+      "detail": "probe 200 بایت"
+    }
+  ]
+}

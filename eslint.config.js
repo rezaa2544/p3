@@ -39,7 +39,10 @@ export default tseslint.config(
       globals: {
         document: 'readonly',
         location: 'readonly',
+        navigator: 'readonly',
         window: 'readonly',
+        Event: 'readonly',
+        getComputedStyle: 'readonly',
         HTMLScriptElement: 'readonly',
       },
     },
