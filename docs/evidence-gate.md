@@ -48,6 +48,7 @@
 | بازبینی ایستای فایل اجرایی ویندوز | `npm run verify:win` → ۷/۷ (PE32+ x64، SEA شامل HTML) — `artifacts/payesh2-win-static.json` | PASS |
 | اجرای ویندوزی روی ویندوز واقعی | باینری ساخته شد، اجرا ممکن نبود | NOT RUN |
 | اجرای بسته‌بندی‌شده (همان کد ویندوز) روی لینوکس | `artifacts/payesh2` → health ok، `/standalone.html` ۲۰۰، راه‌اندازی اولیه با رمز تصادفی، ورود موفق، صفر خطای کنسول | PASS (لینوکس) |
+| دسترس‌پذیری WCAG 2.1 AA (axe-core، ۱۲ صفحه، مرورگر واقعی) | `npm run audit:a11y` → **۰ ایراد** critical/serious/moderate/minor — `docs/testing/a11y-report.json`، `docs/testing/05-accessibility.md` | PASS |
 | آزمون بار | `docs/testing/load-report-real-pg-2026-10-23.json` — PostgreSQL 16.2، ۵ سناریو، ۰ خطا/۰ non-2xx | PASS (روی PostgreSQL واقعی، یک ماشین) |
 | مهاجرت و اجرای کامل روی PostgreSQL واقعی | PostgreSQL 16.2، مهاجرت ۰۰۱+۰۰۲، E2E مرورگری ۲۳/۲۳ — `docs/testing/04-real-postgres-restore.md` | PASS |
 | بازیابی از پشتیبان روی سرور جداگانه | پشتیبان ۳۲ جدول/۱۱۸٬۲۱۱ ردیف → بازیابی روی نمونه‌ی دوم PostgreSQL با شمارش یکسان و ورود موفق (۷/۷) | PASS |

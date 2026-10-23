@@ -8,6 +8,8 @@
 - API با Fastify 5 + TypeScript + SQL خام و RLS
 - ۹ نقش سازمانی: مدیر مجموعه، مدیر مدرسه، معاون، مسئول فناوری، دبیر، مشاور، مالی،
   دانش‌آموز، والد
+- دسترس‌پذیری: بازبینی axe-core روی ۱۲ صفحه → **۰ ایراد WCAG 2.1 AA**
+  ([`docs/testing/05-accessibility.md`](docs/testing/05-accessibility.md))
 - آزمون‌ها: **۹۶ آزمون API**، **۳۳ آزمون رابط** و **۳۰ بررسی E2E در مرورگر واقعی**
   (۷ تک‌فایل + ۲۳ جریان محصول، شامل قطع واقعی شبکه) — همه روی **PostgreSQL 16.2** هم اجرا
   شدند: [`docs/testing/01-strategy.md`](docs/testing/01-strategy.md)
@@ -36,9 +38,9 @@
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
-payesh2-win-x64.zip          f90196db50686c7a535fb3ddfe13f0ad691c32d395bf0c9cf6c47984b7f24f1a
-payesh2-standalone-html.zip  fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af
-payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c
+payesh2-win-x64.zip          4659dcd9cf311c15f7ba5356411b8db10afd933e975d7b04f1432e1e91e5a994
+payesh2-standalone-html.zip  9d54b9f113c1fc248121b8ae35fdaf78d2ebcc2c2ad3ca9d89e75c2b30bad0d7
+payesh2-standalone.html      d6a1be0c46a9dbb84a61501d41768757639fd2ded06be2d7d07c76a161f18c00
 ```
 
 > چرا ZIP و نه EXE خام؟ حد مجاز هر فایل در گیت‌هاب ۱۰۰MB است و EXE خام ۱۱۹MB است؛ ZIP آن
@@ -148,6 +150,7 @@ scrypt برای رمز، کوکی نشست `HttpOnly`/`SameSite`، CSRF اجبا
 | استقرار | `docs/deployment/01-runbook.md` |
 | آزمون و بار | `docs/testing/01-strategy.md` + `docs/testing/load-report-real-pg-2026-10-23.json` |
 | PostgreSQL واقعی و بازیابی | `docs/testing/04-real-postgres-restore.md` |
+| دسترس‌پذیری | `docs/testing/05-accessibility.md` |
 | عملیات | `docs/operations/01-runbook.md` |
 | نقشه راه | `docs/roadmap/01-phases.md` |
 | تصمیم‌ها (ADR) | `docs/decisions/0001-stack.md` … `0003-packaging.md` |
@@ -166,6 +169,7 @@ npm run build
 E2E_BASE=http://127.0.0.1:3000 npm run test:e2e:standalone   # ۷ بررسی
 E2E_BASE=http://127.0.0.1:3000 npm run test:e2e:product      # ۲۳ بررسی
 npm run verify:win                                           # بازبینی ایستای EXE ویندوز
+E2E_BASE=http://127.0.0.1:3000 npm run audit:a11y             # دسترس‌پذیری (axe-core)
 ```
 
 نتیجه‌ی آخرین اجرا (Chromium headless ۱۳۱): **۷/۷** و **۲۳/۲۳ PASS**؛ جزئیات در

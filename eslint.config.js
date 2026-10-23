@@ -34,7 +34,7 @@ export default tseslint.config(
   },
   {
     // کدهایی که به‌صورت رشته به page.evaluate داده می‌شوند داخل مرورگر اجرا می‌شوند
-    files: ['scripts/e2e-*.mjs'],
+    files: ['scripts/e2e-*.mjs', 'scripts/a11y-audit.mjs'],
     languageOptions: {
       globals: {
         document: 'readonly',

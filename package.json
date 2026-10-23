@@ -33,10 +33,12 @@
     "test:load": "npm --workspace apps/api run test:load",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
     "test:e2e:product": "node scripts/e2e-product.mjs",
-    "verify:win": "node scripts/verify-win-artifact.mjs"
+    "verify:win": "node scripts/verify-win-artifact.mjs",
+    "audit:a11y": "node scripts/a11y-audit.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "axe-core": "^4.14.0",
     "eslint": "^9.39.1",
     "postject": "^1.0.0-alpha.6",
     "typescript": "^5.9.3",

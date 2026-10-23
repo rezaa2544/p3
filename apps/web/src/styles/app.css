@@ -10,7 +10,7 @@
   --c-border-strong: #c3d2d5;
   --c-text: #13272b;
   --c-text-soft: #51696e;
-  --c-muted: #7b8f93;
+  --c-muted: #5a6d71; /* کنتراست ۵.۴ روی سفید؛ WCAG AA (۴.۵:۱) */
   --c-primary: #0f766e;
   --c-primary-strong: #0b5b55;
   --c-primary-soft: #e3f2f0;

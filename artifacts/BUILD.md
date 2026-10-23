@@ -13,11 +13,11 @@
 ## sha256 (بررسی سلامت دانلود)
 
 ```text
-fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af  payesh2-standalone-html.zip
-f90196db50686c7a535fb3ddfe13f0ad691c32d395bf0c9cf6c47984b7f24f1a  payesh2-win-x64.zip
-05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c  payesh2-standalone.html
-c15dc6bb33ca40606e5dc0c54f38e0ba8f1432febb8760ff8d94070bb9e39159  payesh2.exe   (داخل ZIP ویندوز)
-e2fecf5637db320af2e4a55083bea0b71f59bea2ccb4004146b593b3caa10f39  payesh2       (لینوکس، ساخت محلی)
+9d54b9f113c1fc248121b8ae35fdaf78d2ebcc2c2ad3ca9d89e75c2b30bad0d7  payesh2-standalone-html.zip
+4659dcd9cf311c15f7ba5356411b8db10afd933e975d7b04f1432e1e91e5a994  payesh2-win-x64.zip
+d6a1be0c46a9dbb84a61501d41768757639fd2ded06be2d7d07c76a161f18c00  payesh2-standalone.html
+61512ca69b07eea1c9c9d9cfa1067ebb9dbf7778a3a2a90f582befe57faae101  payesh2.exe   (داخل ZIP ویندوز)
+aeb0582ab0728156701bd4a61db8942c319ba8f0f2662e7e1467bf908c765154  payesh2       (لینوکس، ساخت محلی)
 ```
 
 بررسی در ویندوز (PowerShell):
@@ -49,7 +49,7 @@ npm run test:e2e:standalone  # آزمون مرورگر واقعی (نیازمن�
 ## فراداده‌ی ساخت
 
 - Node بسته‌بندی‌شده: **26.12.1** (باینری رسمی از `node-win-x64` / `node-linux-x64`)
-- بیلد ویندوز: `c2bbb585a308` — بیلد لینوکس: `cd3c1290cf65`
+- بیلد ویندوز: `c4d38d3fa7fb` — بیلد لینوکس: `34d18f0c66ad`
 - راستی‌آزمایی بیلد لینوکسی: مهاجرت ۰۰۱+۰۰۲ اعمال شد، `GET /api/health` →
   `{"status":"ok","db":"ok","migrations":2}`، `GET /standalone.html` → ۲۰۰ و ۳۹۱٬۷۲۷ بایت،
   ورود مدیر با رمز تصادفی ۲۰۰.
