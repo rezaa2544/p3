@@ -227,6 +227,17 @@ await section('رمز قدیمی دیگر کار نمی‌کند', async () => {
   await sleep(800);
   const stillLogin = await fresh.$('input#password');
   record('ورود با رمز قدیمی رد می‌شود', Boolean(stillLogin), 'فرم ورود باقی می‌ماند');
+  // پاک‌کردن فیلدها: رمز قبلی هنوز داخل ورودی است و تایپ دوباره آن را به هم می‌چسباند
+  await fresh.evaluate(() => {
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    for (const id of ['username', 'password']) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      setter.call(el, '');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+  await fresh.type('input#username', USERNAME);
   await fresh.type('input#password', NEW_PASSWORD);
   await Promise.all([
     fresh.waitForFunction(() => !document.querySelector('input[type=password]'), { timeout: 30_000 }),
