@@ -13,6 +13,8 @@ artifacts/*
 !artifacts/payesh2-win-x64.zip
 !artifacts/checksums.json
 !artifacts/payesh2-win-static.json
+# آیکون برنامه: ورودی ساخت است (در منابع PE جاسازی می‌شود)، نه خروجی
+!artifacts/payesh2.ico
 *.log
 .env
 .env.*

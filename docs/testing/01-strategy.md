@@ -65,6 +65,14 @@ units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-s
   (برچسب‌ها، `aria-*`، اندازه‌ی ناحیه‌ی لمس، کنتراست رنگ‌ها در CSS) انجام شده.
 - آزمون چاپ کارنامه در چاپگر واقعی — **NOT RUN**.
 
+## ۴.۱. آزمون نسخهٔ میزکار (تازه — ۲۰۲۶-۱۰-۲۴)
+
+- منطق نصب/حذف/حالت‌های اجرا: `test/install-plan.test.ts`، `test/desktop-installer.test.ts`،
+  `test/desktop-bootstrap.test.ts` (بخشی از `npm run test:api`).
+- بازبینی ایستای PE: `npm run verify:win` (زیرسیستم GUI، آیکون، نسخه، دارایی‌ها).
+- آزمون مرورگری روی فایل اجرایی واقعی: `scripts/e2e-desktop.mjs` — در CI اجرا می‌شود.
+- جزئیات و محدودیت‌ها: [`06-desktop.md`](06-desktop.md).
+
 ## ۵. اجرای آزمون‌ها
 
 ```bash
@@ -72,6 +80,10 @@ npm run typecheck
 npm run lint
 npm run test:api          # نیاز به PGlite؛ پورت را خودش انتخاب می‌کند
 npm run test:web
+npm run artifact:exe && npm run verify:win      # بازبینی ایستای PE ویندوز
+npm run artifact:exe:linux                      # همان کد برای اجرای واقعی
+PAYESH2_HOME=$(mktemp -d) PORT=3210 ./artifacts/payesh2 --server &
+E2E_DESKTOP_BASE=http://127.0.0.1:3210 npm run test:e2e:desktop
 # آزمون بار (سرور جدا روی پورت ۳۱۰۰ لازم است):
 BASE_URL=http://127.0.0.1:3100 LOAD_CONNECTIONS=20 LOAD_DURATION=10 \
 PGLITE_DIR=/tmp/pglite-load PGLITE_PORT=55440 PORT=3100 RATE_LIMIT_MAX=500000 \

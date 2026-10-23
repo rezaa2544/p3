@@ -14,6 +14,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const artifacts = path.join(root, 'artifacts');
 const work = path.join(artifacts, '.zip-work');
 const guide = path.join(root, 'docs/deployment/standalone-howto.txt');
+const desktopGuide = path.join(root, 'docs/deployment/windows-desktop-howto.txt');
 
 await rm(work, { recursive: true, force: true });
 await mkdir(work, { recursive: true });
@@ -41,10 +42,11 @@ try {
   await stat(exe);
   winZip = path.join(artifacts, 'payesh2-win-x64.zip');
   await rm(winZip, { force: true });
-  await stage(guide, path.join(work, 'راهنما.txt'));
-  const stagedExe = path.join(work, 'payesh2.exe');
+  await stage(desktopGuide, path.join(work, 'راهنمای نصب.txt'));
+  // نام فایل داخل بسته با نام نصب‌شده یکی است تا کاربر همان چیزی را ببیند که نصب می‌شود
+  const stagedExe = path.join(work, 'Payesh2.exe');
   await stage(exe, stagedExe);
-  execFileSync('zip', ['-9', '-X', '-q', '-j', winZip, stagedExe, path.join(work, 'راهنما.txt')]);
+  execFileSync('zip', ['-9', '-X', '-q', '-j', winZip, stagedExe, path.join(work, 'راهنمای نصب.txt')]);
 } catch {
   console.warn('• هشدار: payesh2.exe نیست؛ ZIP ویندوز ساخته نشد (npm run artifact:exe)');
 }

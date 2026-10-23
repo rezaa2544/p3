@@ -61,3 +61,57 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: لیست وابستگی‌های تولیدی
         run: npm ls --omit=dev --all > dependencies.txt || true
+
+  desktop:
+    name: نسخه میزکار (PE ویندوز + آزمون واقعی)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: کتابخانه‌های سیستمی مرورگر (برای آزمون میزکار)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libnss3 libnspr4 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 \
+            libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libpango-1.0-0 libcairo2 libasound2t64 fonts-noto-core
+      - name: ساخت رابط کاربری و API
+        run: npm run build
+      - name: ساخت نسخه HTML تک‌فایل
+        run: npm run artifact:html
+      - name: ساخت فایل اجرایی ویندوز
+        run: npm run artifact:exe
+      - name: بازبینی ایستای PE (زیرسیستم GUI، آیکون، منابع، دارایی‌ها)
+        run: npm run verify:win
+      - name: ساخت نسخه لینوکسی همان کد برای اجرای واقعی
+        run: npm run artifact:exe:linux
+      - name: اجرای نسخه اجرایی و آزمون میزکار با مرورگر واقعی
+        env:
+          E2E_DESKTOP_BASE: http://127.0.0.1:3210
+        run: |
+          export PAYESH2_HOME="$(mktemp -d)"
+          ./artifacts/payesh2 --server > desktop-run.log 2>&1 &
+          for i in $(seq 1 90); do
+            curl -sf http://127.0.0.1:3210/api/health > /dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:3210/api/health || { cat desktop-run.log; exit 1; }
+          node scripts/e2e-desktop.mjs
+      - name: آپلود شواهد میزکار
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-evidence
+          path: |
+            artifacts/payesh2-win-static.json
+            artifacts/payesh2-win-x64.json
+            artifacts/payesh2-linux-x64.json
+            docs/testing/desktop-e2e.json
+            docs/testing/evidence
+            desktop-run.log
+          retention-days: 7

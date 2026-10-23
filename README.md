@@ -25,18 +25,18 @@
 
 | قالب | لینک دانلود مستقیم | حجم | وضعیت |
 |---|---|---|---|
+| **ویندوز x64 — برنامهٔ میزکار (ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ نصب per-user + میان‌بر + بدون پنجرهٔ کنسول (زیرسیستم GUI، آیکون و نسخهٔ جاسازی‌شده، بازبینی ایستای PE ۱۴/۱۴)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
 | **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
-| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ بسته‌بندی و بازبینی ایستای PE (x64)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
 | HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۵ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
 | اپلیکیشن اندروید (APK) | — | — | ⛔ **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
 | آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
-| نصب‌کننده‌ی ویندوز (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — نسخه‌ی تک‌فایل جایگزین شد |
-| نسخه‌ی لینوکس x64 | [ساخت محلی](artifacts/BUILD.md) | ۱۶۲ MB | ✅ ساخته و کامل آزموده شد؛ به‌دلیل حجم در گیت نیست |
+| نصب‌کنندهٔ جداگانه (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — همان EXE خودش نصب می‌کند (بدون UAC، بدون نصب‌کنندهٔ سوم) |
+| نسخهٔ لینوکس x64 | [ساخت محلی](artifacts/BUILD.md) | ۱۶۲ MB | ✅ ساخته و کامل آزموده شد؛ به‌دلیل حجم در گیت نیست |
 
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
-payesh2-win-x64.zip          3b6bb4fee3f56641da00279f80d211ffe3c22399d652cbdaf4ca0ca87a785359
+payesh2-win-x64.zip          667eaaf47e42d5514225383e40d8dc8eb2eb4ebc6bcf0ffd70a3174703c2625f
 payesh2-standalone-html.zip  fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af
 payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c
 ```
@@ -45,24 +45,28 @@ payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d12
 > ۴۴MB می‌شود. آپلود در بخش Releases همچنان BLOCKED است (میزبان `uploads.github.com` از محیط
 > ساخت در دسترس نیست)؛ به‌جای لینک ساختگی، فایل در مخزن و با لینک `raw` منتشر شده است.
 
-### ۱) ویندوز: اجرای فوری
+### ۱) ویندوز: نصب و اجرا (بدون کنسول، بدون Node)
 
-1. فایل [`payesh2-win-x64.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)
-   را دانلود و باز کنید و `payesh2.exe` را در یک پوشه‌ی دلخواه اجرا کنید
-   (نصب لازم نیست؛ Node هم لازم نیست). ساخت محلی: `npm ci && npm run build && npm run artifact:exe`
-2. پنجره‌ی کنسول آدرس `http://localhost:3000` و **رمز موقت مدیر** را یک‌بار چاپ می‌کند؛
-   آن را یادداشت کنید.
-3. مرورگر را باز کنید → `http://localhost:3000` → با نام کاربری `admin` و همان رمز وارد شوید.
-4. در نخستین ورود، رمز باید تغییر کند. سپس مدرسه/کلاس/دانش‌آموز/دبیر بسازید.
+1. [`payesh2-win-x64.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)
+   را دانلود و باز کنید و روی `Payesh2.exe` دابل‌کلیک کنید.
+   ساخت محلی: `npm ci && npm run build && npm run artifact:exe`
+2. برنامه خودش را برای همان کاربر نصب می‌کند — **بدون پنجرهٔ CMD و بدون UAC**:
+   - برنامه: `%LOCALAPPDATA%\Programs\Payesh2\Payesh2.exe`
+   - داده: `%LOCALAPPDATA%\Payesh2\data` · گزارش: `%LOCALAPPDATA%\Payesh2\logs\app.log`
+   - میان‌بر «پایش ۲» در منوی شروع و دسکتاپ + ثبت در «افزودن یا حذف برنامه‌ها»
+3. **ورود نخستین:** نام کاربری `123456` و رمز `123456`.
+   سامانه بلافاصله تغییر رمز را اجباری می‌کند (حداقل ۱۰ نویسه، شامل حرف و رقم).
+4. پنجرهٔ برنامه در Microsoft Edge به‌صورت «برنامه» (بدون نوار آدرس) باز می‌شود؛ سرور محلی
+   فقط روی `127.0.0.1:3210` گوش می‌دهد. بستن پنجره = بسته‌شدن برنامه.
+5. حذف: «افزودن یا حذف برنامه‌ها» ← پایش ۲ ← حذف. داده‌های مدرسه پاک نمی‌شوند.
 
-داده‌ها در `%USERPROFILE%\.payesh2\` نگه‌داری می‌شوند. برای دسترسی دستگاه‌های دیگر شبکه‌ی
-مدرسه، `HOST=0.0.0.0` (پیش‌فرض) و آدرس IP رایانه را در مرورگر باز کنید.
+راهنمای کامل (فارسی، داخل ZIP هم هست): [`docs/deployment/windows-desktop-howto.txt`](docs/deployment/windows-desktop-howto.txt)
+· طراحی و دلیل تصمیم‌ها: [`ADR 0005`](docs/decisions/0005-desktop-install-and-bootstrap-credentials.md)
 
-متغیرهای اختیاری: `PORT` (۳۰۰۰)، `PAYESH2_HOME`، `ADMIN_PASSWORD`، `FIRST_SCHOOL_NAME`.
-
-> هشدار امنیتی: نسخه‌ی ویندوزی برای یک رایانه/یک مدرسه است و TLS ندارد. برای دسترسی از
-> اینترنت، نسخه‌ی سروری با دامنه و HTTPS را استفاده کنید (پایین را ببینید).
-> فایل اجرایی امضای دیجیتال تجاری ندارد و ممکن است SmartScreen هشدار بدهد.
+> هشدار امنیتی: نسخهٔ میزکار برای یک رایانه/یک مدرسه است، TLS ندارد و عمداً فقط روی حلقهٔ
+> محلی گوش می‌دهد. برای دسترسی معلمان از بیرون مدرسه، نسخهٔ سروری با دامنه و HTTPS را
+> استفاده کنید (پایین را ببینید). فایل اجرایی امضای تجاری ندارد؛ SmartScreen ممکن است هشدار
+> «ناشر ناشناس» بدهد — هش sha256 را با `artifacts/BUILD.md` مقایسه کنید.
 
 ### ۲) اجرای سروری (توصیه‌شده برای تولید)
 
@@ -168,15 +172,18 @@ E2E_BASE=http://127.0.0.1:3000 npm run test:e2e:product      # ۲۳ بررسی
 npm run verify:win                                           # بازبینی ایستای EXE ویندوز
 ```
 
-نتیجه‌ی آخرین اجرا (Chromium headless ۱۳۱): **۷/۷** و **۲۳/۲۳ PASS**؛ جزئیات در
+نتیجه‌ی آخرین اجرای ثبت‌شده (Chromium headless ۱۳۱): **۷/۷** و **۲۳/۲۳ PASS**؛ جزئیات در
 [`docs/testing/03-product-e2e.md`](docs/testing/03-product-e2e.md).
+آزمون میزکار (`npm run test:e2e:desktop`) در کار CI «نسخه میزکار» اجرا می‌شود؛ جزئیات و
+وضعیت فعلی: [`docs/testing/06-desktop.md`](docs/testing/06-desktop.md).
 
 ## محدودیت‌های نسخه ۰.۱.۰ (صادقانه)
 
 1. **استقرار اینترنتی انجام نشده**؛ آدرس HTTPS عمومی وجود ندارد (BLOCKED).
 2. **فایل اجرایی ویندوز روی ویندوز واقعی اجرا نشده** (NOT RUN)؛ همان بسته روی لینوکس اجرا شد.
-3. **APK اندروید و نصب‌کننده‌ی (installer) ویندوز ساخته نشده‌اند** (BLOCKED / NOT BUILT)؛
-   برای ویندوز همان فایل تک‌فایل بدون نیاز به نصب ارائه شده است.
+3. **APK اندروید ساخته نشده** (BLOCKED — بدون Android SDK/JDK). نصب‌کنندهٔ جداگانه لازم
+   نیست: همان `Payesh2.exe` خودش را per-user نصب می‌کند (میان‌بر، رجیستری، حذف با
+   `--uninstall`). اما اجرای این نصب روی ویندوز واقعی هنوز **NOT RUN** است.
 4. آزمون E2E مرورگری و قطع واقعی شبکه **انجام شده** (۲۳/۲۳ PASS)؛ آنچه باقی است: اجرا روی
    ویندوز واقعی، آزمون بار روی PostgreSQL مدیریت‌شده و بازیابی روی سرور جداگانه.
 5. MFA فقط از طریق API فعال می‌شود؛ پیامک/ایمیل واقعی ندارد.
@@ -189,7 +196,8 @@ npm run verify:win                                           # بازبینی ا
 npm run build                 # وب + API
 npm run artifact:html         # → artifacts/payesh2-standalone.html
 npm run artifact:exe          # → artifacts/payesh2.exe (ویندوز؛ روی لینوکس هم ساخته می‌شود)
-npm run verify:win            # بازبینی PE/معماری/جاسازی HTML
+npm run verify:win            # بازبینی PE: زیرسیستم GUI، آیکون، نسخه، دارایی‌ها
+npm run artifact:exe:linux    # همان کد برای اجرای واقعی/آزمون میزکار
 npm run release:assets        # هر دو ZIP + checksums.json
 ```
 

@@ -2,10 +2,15 @@
 /**
  * ساخت نسخه‌ی اجرایی مستقل (بدون نیاز به نصب Node روی رایانه‌ی مقصد).
  *
- * روش: باندل کامل API + رابط کاربری + مهاجرت‌ها + فایل‌های PGlite به یک فایل ESM،
- * سپس بسته‌بندی آن به‌عنوان SEA (Single Executable Application) داخل نسخه‌ی رسمی Node.
- * در نخستین اجرا، بوت‌استرپ همه‌ی دارایی‌ها را در PAYESH2_HOME استخراج می‌کند و سرور را
- * در همان فرایند بالا می‌آورد (بدون پنجره‌ی کنسول اضافه، بدون نیاز به npm).
+ * روش: باندل کامل API + رابط کاربری + مهاجرت‌ها + فایل‌های PGlite + پوستهٔ میزکار به
+ * چند دارایی، سپس بسته‌بندی آن‌ها به‌عنوان SEA (Single Executable Application) داخل
+ * نسخه‌ی رسمی Node.
+ *
+ * خروجی ویندوز یک برنامهٔ «دسکتاپی» است، نه ابزار خط فرمان:
+ *  • زیرسیستم PE به GUI تغییر می‌کند → هیچ پنجرهٔ CMD باز نمی‌شود.
+ *  • آیکون و اطلاعات نسخه در منابع PE جاسازی می‌شوند.
+ *  • همان فایل هم نصب‌کننده است (`--install`)، هم برنامه (اجرای عادی) و هم حذف‌کننده
+ *    (`--uninstall`).
  *
  * استفاده:
  *   node scripts/build-exe.mjs --target linux-x64   # برای راستی‌آزمایی روی همین سندباکس
@@ -17,6 +22,7 @@ import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promi
 import { existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { desktopify, readPeInfo } from './lib/pe.mjs';
 
 const NODE_VERSION = '26.12.1';
 const FUSE = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
@@ -57,12 +63,10 @@ async function nodeBinary(platform) {
   const local = path.join(cache, `node-${platform}`);
   if (existsSync(local)) return local;
   console.log(`↓ دریافت Node ${NODE_VERSION} برای ${platform} از npm registry`);
-  const tgz = path.join(cache, `node-${platform}-${NODE_VERSION}.tgz`);
   execFileSync('npm', ['pack', `node-${platform}-x64@${NODE_VERSION}`, '--pack-destination', cache], {
     stdio: 'inherit',
   });
   const tar = path.join(cache, `node-${platform}-x64-${NODE_VERSION}.tgz`);
-  if (!existsSync(tar) && existsSync(tgz)) await cp(tgz, tar);
   const extract = path.join(cache, `x-${platform}`);
   await mkdir(extract, { recursive: true });
   execFileSync('tar', ['-xzf', tar, '-C', extract, '--strip-components=1']);
@@ -74,25 +78,28 @@ async function nodeBinary(platform) {
 
 const linuxNode = await nodeBinary('linux');
 
-// ۲) باندل API به یک فایل ESM (همه‌ی وابستگی‌ها جز ماژول‌های بومی اختیاری)
-console.log('• باندل سرور');
-const serverEntry = path.join(root, 'apps/api/dist/server.js');
-if (!existsSync(serverEntry)) throw new Error('apps/api/dist نیست؛ ابتدا npm run build');
+// ۲) باندل API به یک فایل CJS (همه‌ی وابستگی‌ها جز ماژول‌های بومی اختیاری)
+function bundle(entry, outfile, label) {
+  if (!existsSync(entry)) throw new Error(`${entry} نیست؛ ابتدا npm run build`);
+  console.log(`• باندل ${label}`);
+  sh('npx', [
+    '--no-install',
+    'esbuild',
+    entry,
+    '--bundle',
+    '--platform=node',
+    '--format=cjs',
+    '--target=node22',
+    '--outfile=' + outfile,
+    '--log-level=error',
+    '--external:pg-native',
+    '--external:bufferutil',
+    '--external:utf-8-validate',
+  ]);
+}
+
 const bundlePath = path.join(work, 'server.cjs');
-sh('npx', [
-  '--no-install',
-  'esbuild',
-  serverEntry,
-  '--bundle',
-  '--platform=node',
-  '--format=cjs',
-  '--target=node22',
-  '--outfile=' + bundlePath,
-  '--log-level=error',
-  '--external:pg-native',
-  '--external:bufferutil',
-  '--external:utf-8-validate',
-]);
+bundle(path.join(root, 'apps/api/dist/server.js'), bundlePath, 'سرور');
 
 /**
  * esbuild در خروجی CJS، `import.meta` را با یک شیء خالی جایگزین می‌کند و PGlite
@@ -109,9 +116,17 @@ const patched = rawBundle
 if (!patched.includes('__payeshSelfUrl')) throw new Error('patch import.meta ناموفق بود');
 await writeFile(bundlePath, patched);
 
-// ۳) دارایی‌ها
+// ۳) پوستهٔ میزکار (نصب/اجرا/حذف) — از همان کد تایپ‌اسکریپتِ آزمون‌شده
+const desktopPath = path.join(work, 'desktop.cjs');
+bundle(path.join(root, 'apps/api/src/desktop/cli.ts'), desktopPath, 'پوستهٔ میزکار');
+if (!(await readFile(desktopPath, 'utf8')).includes('runDesktop')) {
+  throw new Error('باندل پوستهٔ میزکار ناقص است');
+}
+
+// ۴) دارایی‌ها
 const assets = new Map();
 assets.set('server.cjs', bundlePath);
+assets.set('desktop.cjs', desktopPath);
 assets.set('pglite.wasm', path.join(root, 'node_modules/@electric-sql/pglite/dist/pglite.wasm'));
 assets.set('pglite.data', path.join(root, 'node_modules/@electric-sql/pglite/dist/pglite.data'));
 for (const f of await walk(path.join(root, 'apps/api/migrations'))) {
@@ -122,20 +137,21 @@ for (const f of await walk(path.join(root, 'apps/web/dist'))) {
 }
 // نسخه HTML تک‌فایل (اختیاری) تا سرور بسته‌بندی‌شده هم /standalone.html داشته باشد
 const standalonePath = path.join(root, 'artifacts/payesh2-standalone.html');
-let hasStandalone = false;
 try {
   await stat(standalonePath);
   assets.set('payesh2-standalone.html', standalonePath);
-  hasStandalone = true;
 } catch {
   console.warn('• هشدار: artifacts/payesh2-standalone.html نیست؛ نسخه‌ی بسته‌بندی‌شده /standalone.html نخواهد داشت');
 }
-assets.set('BUILD_ID', null);
 const buildIdPath = path.join(work, 'build-id.txt');
 await writeFile(buildIdPath, buildId);
 assets.set('BUILD_ID', buildIdPath);
+const versionPath = path.join(work, 'version.txt');
+await writeFile(versionPath, pkg.version);
+assets.set('VERSION', versionPath);
 
-// ۴) بوت‌استرپ
+// ۵) بوت‌استرپ
+const payloadNames = [...assets.keys()].filter((n) => n !== 'BUILD_ID' && n !== 'VERSION' && n !== 'desktop.cjs');
 const mainPath = path.join(work, 'main.cjs');
 await writeFile(
   mainPath,
@@ -152,22 +168,65 @@ if (!sea.isSea()) {
 }
 
 const buildId = sea.getAsset('BUILD_ID', 'utf8').trim();
-const home = process.env.PAYESH2_HOME || path.join(os.homedir(), '.payesh2');
+const version = sea.getAsset('VERSION', 'utf8').trim();
+const argv = process.argv.slice(1);
+// در حالت نصب/حذف/برنامه پنجره‌ای وجود ندارد؛ در --server و --plan کنسول لازم است.
+const gui = !['--server', '--headless', '--plan', '--dry-run'].some((f) => argv.includes(f));
+
+const home = process.env.PAYESH2_HOME || (process.env.LOCALAPPDATA
+  ? path.join(process.env.LOCALAPPDATA, 'Payesh2')
+  : (process.env.XDG_DATA_HOME ? path.join(process.env.XDG_DATA_HOME, 'payesh2') : path.join(os.homedir(), '.payesh2')));
+const logDir = path.join(home, 'logs');
+const logFile = path.join(logDir, 'app.log');
+const payload = ${JSON.stringify(payloadNames)};
+
+try { fs.mkdirSync(logDir, { recursive: true }); } catch {}
+
+function log(line) {
+  const text = '[' + new Date().toISOString() + '] ' + line + '\\n';
+  try { fs.appendFileSync(logFile, text); } catch {}
+  if (!gui) { try { process.stdout.write(text); } catch {} }
+}
+
+if (gui) {
+  // بدون کنسول: نوشتن روی دستگیره‌های استاندارد نامعتبر خطا می‌دهد؛ خروجی به فایل می‌رود.
+  const sink = (chunk) => {
+    try { fs.appendFileSync(logFile, Buffer.isBuffer(chunk) ? chunk : String(chunk)); } catch {}
+    return true;
+  };
+  process.stdout.write = sink;
+  process.stderr.write = sink;
+  const writeSync = fs.writeSync;
+  fs.writeSync = function (fd) {
+    try { return writeSync.apply(fs, arguments); } catch (e) {
+      if (fd === 1 || fd === 2) return 0;
+      throw e;
+    }
+  };
+}
+
 const runtime = path.join(home, 'runtime', buildId);
-const files = ${JSON.stringify([...assets.keys()].filter((n) => n !== 'BUILD_ID'))};
+const bootDir = path.join(home, 'runtime', '.boot-' + buildId);
+
+function writeAsset(name, dest) {
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  const buf = Buffer.from(sea.getAsset(name));
+  if (!(fs.existsSync(dest) && fs.statSync(dest).size === buf.length)) fs.writeFileSync(dest, buf);
+}
+
+function ensureBoot() {
+  const dest = path.join(bootDir, 'desktop.cjs');
+  writeAsset('desktop.cjs', dest);
+  return dest;
+}
 
 function ensureRuntime() {
   const marker = path.join(runtime, '.ready');
-  if (fs.existsSync(marker)) return;
+  if (fs.existsSync(marker)) return runtime;
   fs.mkdirSync(runtime, { recursive: true });
-  for (const name of files) {
-    const dest = path.join(runtime, name);
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    const buf = Buffer.from(sea.getAsset(name));
-    const same = fs.existsSync(dest) && fs.statSync(dest).size === buf.length;
-    if (!same) fs.writeFileSync(dest, buf);
-  }
+  for (const name of payload) writeAsset(name, path.join(runtime, name));
   fs.writeFileSync(marker, buildId);
+  return runtime;
 }
 
 function ensureSecret(dir) {
@@ -179,43 +238,53 @@ function ensureSecret(dir) {
   return secret;
 }
 
-ensureRuntime();
-const dataDir = process.env.PGLITE_DIR || path.join(home, 'data');
-fs.mkdirSync(dataDir, { recursive: true });
-
-process.env.PAYESH2_BUILD = buildId;
-process.env.PAYESH2_HOME = home;
-process.env.WEB_DIST = path.join(runtime, 'web');
-process.env.MIGRATIONS_DIR = path.join(runtime, 'migrations');
-process.env.UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(home, 'uploads');
-process.env.PGLITE_DIR = dataDir;
-process.env.PGLITE_WASM = path.join(runtime, 'pglite.wasm');
-process.env.PGLITE_DATA = path.join(runtime, 'pglite.data');
-${hasStandalone ? "process.env.STANDALONE_HTML = path.join(runtime, 'payesh2-standalone.html');" : ''}
-process.env.SESSION_SECRET = process.env.SESSION_SECRET || ensureSecret(home);
-process.env.PORT = process.env.PORT || '3000';
-process.env.HOST = process.env.HOST || '0.0.0.0';
-process.env.APP_ORIGIN = process.env.APP_ORIGIN || 'http://localhost:' + process.env.PORT;
-process.env.PAYESH_FIRST_ADMIN = process.env.PAYESH_FIRST_ADMIN || '1';
-if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
-process.chdir(home);
-
-console.log('پایش ۲ — نسخه‌ی ' + buildId);
-console.log('آدرس: http://localhost:' + process.env.PORT);
-console.log('داده‌ها: ' + dataDir);
-
-try {
+function startServer(dir) {
+  process.env.WEB_DIST = path.join(dir, 'web');
+  process.env.MIGRATIONS_DIR = path.join(dir, 'migrations');
+  process.env.PGLITE_WASM = path.join(dir, 'pglite.wasm');
+  process.env.PGLITE_DATA = path.join(dir, 'pglite.data');
+  const standalone = path.join(dir, 'payesh2-standalone.html');
+  if (fs.existsSync(standalone)) process.env.STANDALONE_HTML = standalone;
+  try { process.chdir(home); } catch {}
   const { createRequire } = require('node:module');
-  const load = createRequire(__filename);
-  load(path.join(runtime, 'server.cjs'));
+  const load = createRequire(path.join(dir, 'server.cjs'));
+  load(path.join(dir, 'server.cjs'));
+}
+
+process.env.PAYESH2_HOME = home;
+process.env.PAYESH2_BUILD = buildId;
+process.env.SESSION_SECRET = process.env.SESSION_SECRET || ensureSecret(home);
+
+log('پایش ۲ — نسخه‌ی ' + version + ' (' + buildId + ')');
+// در SEA، require تنها ماژول‌های داخلی را می‌شناسد؛ برای بارگذاری فایل از createRequire
+const loadModule = require('node:module').createRequire(process.execPath);
+try {
+  const desktop = loadModule(ensureBoot());
+  Promise.resolve(
+    desktop.runDesktop({
+      argv,
+      execPath: process.execPath,
+      buildId,
+      version,
+      gui,
+      env: process.env,
+      ensureRuntime,
+      startServer,
+      log,
+      exit: (code) => process.exit(code),
+    }),
+  ).catch((e) => {
+    log('fatal: ' + (e && e.stack ? e.stack : e));
+    process.exit(1);
+  });
 } catch (e) {
-  console.error('خطا در راه‌اندازی:', e && e.message ? e.message : e);
+  log('خطا در راه‌اندازی: ' + (e && e.message ? e.message : e));
   process.exit(1);
 }
 `,
 );
 
-// ۵) ساخت blob و تزریق
+// ۶) ساخت blob و تزریق
 const seaConfig = {
   main: mainPath,
   output: path.join(work, 'sea.blob'),
@@ -243,17 +312,50 @@ execFileSync(
   { stdio: 'inherit' },
 );
 
+/**
+ * ویندوز: منابع PE (آیکون/نسخه) و زیرسیستم GUI تا هیچ پنجرهٔ کنسولی باز نشود.
+ * ترتیب مهم است: اول منابع (چون resedit فایل را بازنویسی می‌کند) و بعد تغییر زیرسیستم.
+ */
+let peInfo = null;
+let iconEmbedded = false;
+if (platformKey === 'win') {
+  const iconPath = path.join(outDir, 'payesh2.ico');
+  iconEmbedded = existsSync(iconPath);
+  if (!iconEmbedded) console.warn('• هشدار: artifacts/payesh2.ico نیست؛ فایل بدون آیکون ساخته می‌شود');
+  console.log('• تنظیم زیرسیستم GUI و منابع ویندوز');
+  const original = await readFile(exePath);
+  const desktopBuf = await desktopify(original, {
+    iconPath: iconEmbedded ? iconPath : undefined,
+    version: pkg.version,
+    productName: 'پایش ۲ — Payesh 2',
+    description: 'سامانهٔ مدیریت مدرسه پایش ۲',
+    company: 'پایش ۲',
+    exeName: 'Payesh2.exe',
+  });
+  await writeFile(exePath, desktopBuf);
+  peInfo = readPeInfo(desktopBuf);
+  if (peInfo.subsystemName !== 'GUI') throw new Error('تنظیم زیرسیستم GUI ناموفق بود');
+  // بلاب SEA باید پس از بازنویسی منابع هم سر جایش باشد
+  const check = await readFile(exePath);
+  if (check.length < desktopBuf.length - 1024) throw new Error('فایل پس از جاسازی منابع کوچک‌تر شد');
+}
+
 const size = (await stat(exePath)).size;
 const sha = createHash('sha256').update(await readFile(exePath)).digest('hex');
 const meta = {
   builtAt: new Date().toISOString(),
   buildId,
+  version: pkg.version,
   target,
   nodeVersion: NODE_VERSION,
   file: exeName,
   bytes: size,
   sha256: sha,
   host: `${os.platform()}-${os.arch()}`,
+  subsystem: peInfo?.subsystemName ?? 'CUI',
+  consoleWindow: peInfo ? peInfo.subsystemName === 'CUI' : true,
+  iconEmbedded,
+  modes: ['install', 'app', 'uninstall', 'server', 'plan'],
 };
 await writeFile(path.join(outDir, `payesh2-${target}.json`), JSON.stringify(meta, null, 2));
 console.log(JSON.stringify(meta, null, 2));

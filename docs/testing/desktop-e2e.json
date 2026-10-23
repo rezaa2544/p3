@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-10-23T21:49:17.404Z",
+  "base": "http://127.0.0.1:3311",
+  "browser": "/tmp/chromium",
+  "status": "NOT RUN",
+  "reason": "مرورگر اجرا نشد: Failed to launch the browser process!",
+  "hint": "کتابخانه‌های سیستمی (libnss3 …) نصب نیستند؛ در CI نصب می‌شوند."
+}
