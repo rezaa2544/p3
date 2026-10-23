@@ -154,6 +154,20 @@ export async function buildApp(opts: { logger?: boolean } = {}): Promise<Fastify
       if (req.url.startsWith('/api')) return reply.callNotFound();
       return reply.sendFile('index.html', { maxAge: 0 });
     });
+  } else {
+    app.get('/', async (req, reply) => {
+      reply.type('text/html; charset=utf-8').send(`<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>پایش ۲ — API</title></head>
+<body style="font-family:system-ui;padding:24px;line-height:1.9">
+<h1>پایش ۲ — سرویس API</h1>
+<p>این نمونه ساخته‌شده رابط کاربری ندارد (پوشه <code>apps/web/dist</code> موجود نیست).</p>
+<ul>
+  <li><a href="/api/health">/api/health</a> — سلامت سرویس</li>
+  <li>برای رابط کاربری: <code>npm run build</code> و سپس اجرای سرور</li>
+</ul>
+<p>${req.id}</p>
+</body></html>`);
+    });
   }
 
   return app;

@@ -1,4 +1,4 @@
-import { config, loadConfig, resetConfigCache } from './config.js';
+import { loadConfig, resetConfigCache } from './config.js';
 import { closePool, migrate } from './db.js';
 import { buildApp } from './app.js';
 import { startWorker } from './queue/worker.js';

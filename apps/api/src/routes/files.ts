@@ -26,21 +26,6 @@ function safeName(name: string): string {
   return path.basename(name).replace(/[^\p{L}\p{N}._-]+/gu, '_').slice(0, 120) || 'file';
 }
 
-function mimeFromName(name: string): string {
-  const ext = path.extname(name).toLowerCase();
-  const map: Record<string, string> = {
-    '.pdf': 'application/pdf',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.webp': 'image/webp',
-    '.txt': 'text/plain',
-    '.csv': 'text/csv',
-    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  };
-  return map[ext] ?? 'application/octet-stream';
-}
 
 export function registerFileRoutes(app: FastifyInstance): void {
   app.post('/files', async (req, reply) => {

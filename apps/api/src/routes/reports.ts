@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { schoolTx, type Db } from '../db.js';
 import { badRequest, forbidden, notFound } from '../errors.js';
 import { authOf, clientMeta, requirePerm, todayTehran } from '../lib/http.js';
-import { assertTeacherAssigned, guardianLink, studentByUserId, visibleStudentIds, type AuthContext } from '../lib/scope.js';
+import { guardianLink, studentByUserId, visibleStudentIds, type AuthContext } from '../lib/scope.js';
 import { isoDate, parse, uuid } from '../lib/validate.js';
 import { audit } from '../security/audit.js';
 

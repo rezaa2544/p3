@@ -52,7 +52,7 @@ describe('اطلاعیه‌ها، اعلان‌ها و تکالیف', () => {
 
   it('علامت‌گذاری خوانده‌شده کار می‌کند و student نمی‌تواند اطلاعیه بسازد', async () => {
     const admin = await env.login('adminA');
-    const created = await env.request('POST', '/api/announcements', {
+    await env.request('POST', '/api/announcements', {
       auth: admin,
       body: { title: 'قابل خواندن', body: 'متن' },
     });

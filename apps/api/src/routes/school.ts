@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { schoolTx } from '../db.js';
+import { globalQuery, schoolTx } from '../db.js';
 import { badRequest, notFound } from '../errors.js';
 import { authOf, clientMeta, pageParams, requirePerm } from '../lib/http.js';
 import { assertClassInSchool, requireCurrentYear } from '../lib/scope.js';
@@ -8,6 +8,23 @@ import { isoDate, parse, uuid } from '../lib/validate.js';
 import { audit } from '../security/audit.js';
 
 export function registerSchoolRoutes(app: FastifyInstance): void {
+  app.get('/schools', async (req) => {
+    const auth = authOf(req);
+    if (auth.isSuperAdmin) {
+      const rows = await globalQuery<{ id: string; name: string; code: string }>(
+        'select id, name, code from schools where is_active order by name',
+      );
+      return { items: rows };
+    }
+    return schoolTx(auth, async (db) => ({
+      items: await db.query(
+        `select s.id, s.name, s.code from memberships m join schools s on s.id = m.school_id
+          where m.user_id = $1 and s.is_active order by s.name`,
+        [auth.userId],
+      ),
+    }));
+  });
+
   app.get('/school', async (req) => {
     const auth = authOf(req);
     return schoolTx(auth, async (db) => {
