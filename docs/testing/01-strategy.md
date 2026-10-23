@@ -7,7 +7,8 @@
 | واحد | Vitest | محاسبه‌ی نمره/میانگین، تاریخ تهران، اعتبارسنجی، رمز، TOTP، صف آفلاین |
 | یکپارچه‌ی API | Vitest + `app.inject()` + PGlite واقعی | ۱۳ فایل، همه‌ی مسیرهای حساس، RBAC، RLS، idempotency، پشتیبان، سرو SPA |
 | رابط کاربری | Vitest + jsdom + `fake-indexeddb` | کامپوننت‌های پایه (شامل پایداری فوکوس مودال)، API client، صف آفلاین، راهنمای تک‌فایل |
-| بار | autocannon + هارنس اختصاصی (`apps/api/test/load/run-load.mjs`) | ۵ سناریوی مسیر داغ |
+| بار | autocannon + هارنس اختصاصی (`apps/api/test/load/run-load.mjs`) | ۵ سناریوی مسیر داغ — روی **PostgreSQL 16.2** (`load-report-real-pg-2026-10-23.json`) |
+| بازیابی | scriptهای `db:backup` / `db:restore` | پشتیبان ۳۲ جدول/۱۱۸٬۲۱۱ ردیف → بازیابی روی نمونه‌ی دوم PostgreSQL + آزمون ورود (`04-real-postgres-restore.md`) |
 | مرورگر واقعی (E2E) | Chromium headless ۱۳۱ + puppeteer-core | نسخه‌ی HTML تک‌فایل ۷/۷ PASS (`02-standalone-html.md`) و کل جریان‌های محصول ۲۳/۲۳ PASS (`03-product-e2e.md`) شامل قطع واقعی شبکه و PWA آفلاین |
 
 ## ۲. نتیجه‌ی اجرا (۲۰۲۶-۱۰-۲۳)
@@ -25,6 +26,7 @@ units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-s
 
 آزمون‌های شاخصی که «ادعا» را پشتیبانی می‌کنند:
 
+- `web-static.test.ts` → سرو SPA برای مسیرهای عمیق و ۴۰۴ برای فایل‌های ناموجود.
 - `attendance.test.ts` → «رجیستری: ثبت گروهی با یک کلید عملیات» (باگ واقعی ایندکس یکتا را
   می‌گیرد: یک کلید عملیات برای ۳۰ دانش‌آموز).
 - `grades.test.ts` → «نمره تا تأیید نشدن برای دانش‌آموز و ولی دیده نمی‌شود».

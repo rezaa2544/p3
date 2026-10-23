@@ -25,7 +25,9 @@ const USER = process.env.E2E_USER ?? 'admin';
 const PASSWORD = process.env.E2E_PASSWORD ?? 'Payesh1404a';
 const HTML_PATH = process.env.E2E_HTML ?? path.join(root, 'artifacts/payesh2-standalone.html');
 const evidenceDir = path.join(root, 'docs/testing/evidence');
-const reportPath = path.join(root, 'docs/testing/standalone-e2e.json');
+const reportPath = process.env.E2E_REPORT
+  ? path.resolve(process.env.E2E_REPORT)
+  : path.join(root, 'docs/testing/standalone-e2e.json');
 
 const results = [];
 function record(name, ok, detail) {

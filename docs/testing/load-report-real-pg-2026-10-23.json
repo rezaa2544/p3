@@ -1,0 +1,96 @@
+{
+  "generatedAt": "2026-10-23T20:43:13.418Z",
+  "baseUrl": "http://127.0.0.1:3200",
+  "connections": 20,
+  "durationSeconds": 10,
+  "studentsPerWrite": 30,
+  "results": [
+    {
+      "name": "شروع زنگ: فهرست کلاس",
+      "connections": 20,
+      "durationSeconds": 10.01,
+      "requests": 6129,
+      "requestsPerSecond": 613,
+      "latencyMs": {
+        "average": 32.1,
+        "p50": 31,
+        "p97_5": 50,
+        "p99": 57,
+        "max": 113
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 0
+    },
+    {
+      "name": "شروع زنگ: ثبت حضور گروهی",
+      "connections": 20,
+      "durationSeconds": 10,
+      "requests": 3514,
+      "requestsPerSecond": 351,
+      "latencyMs": {
+        "average": 57,
+        "p50": 56.2,
+        "p95": 78.1,
+        "p99": 92.1,
+        "max": 140.77801499999987
+      },
+      "statusCodes": {
+        "201": 3514
+      },
+      "successRate": 100,
+      "errors": 0
+    },
+    {
+      "name": "ثبت نمرات ارزیابی",
+      "connections": 20,
+      "durationSeconds": 10.01,
+      "requests": 4474,
+      "requestsPerSecond": 447,
+      "latencyMs": {
+        "average": 44.1,
+        "p50": 35,
+        "p97_5": 136,
+        "p99": 177,
+        "max": 301
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 0
+    },
+    {
+      "name": "پس از مدرسه: داشبورد مدیر",
+      "connections": 20,
+      "durationSeconds": 10.02,
+      "requests": 3255,
+      "requestsPerSecond": 326,
+      "latencyMs": {
+        "average": 60.9,
+        "p50": 61,
+        "p97_5": 97,
+        "p99": 107,
+        "max": 128
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 0
+    },
+    {
+      "name": "فرم‌ها: گزینه‌های کلاس/درس",
+      "connections": 20,
+      "durationSeconds": 10.01,
+      "requests": 8832,
+      "requestsPerSecond": 883,
+      "latencyMs": {
+        "average": 22.1,
+        "p50": 22,
+        "p97_5": 34,
+        "p99": 39,
+        "max": 114
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 0
+    }
+  ]
+}

@@ -9,8 +9,8 @@
 - ۹ نقش سازمانی: مدیر مجموعه، مدیر مدرسه، معاون، مسئول فناوری، دبیر، مشاور، مالی،
   دانش‌آموز، والد
 - آزمون‌ها: **۹۶ آزمون API**، **۳۳ آزمون رابط** و **۳۰ بررسی E2E در مرورگر واقعی**
-  (۷ تک‌فایل + ۲۳ جریان محصول، شامل قطع واقعی شبکه) — گزارش در
-  [`docs/testing/01-strategy.md`](docs/testing/01-strategy.md)
+  (۷ تک‌فایل + ۲۳ جریان محصول، شامل قطع واقعی شبکه) — همه روی **PostgreSQL 16.2** هم اجرا
+  شدند: [`docs/testing/01-strategy.md`](docs/testing/01-strategy.md)
 - داوری شواهد: **READY FOR LIMITED PILOT** — جزئیات و محدودیت‌ها در
   [`docs/evidence-gate.md`](docs/evidence-gate.md)
 
@@ -146,7 +146,8 @@ scrypt برای رمز، کوکی نشست `HttpOnly`/`SameSite`، CSRF اجبا
 | پایگاه داده | `docs/database/01-schema.md` |
 | همگام‌سازی آفلاین | `docs/offline-sync/01-design.md` |
 | استقرار | `docs/deployment/01-runbook.md` |
-| آزمون و بار | `docs/testing/01-strategy.md` + `docs/testing/load-report-2026-10-23.json` |
+| آزمون و بار | `docs/testing/01-strategy.md` + `docs/testing/load-report-real-pg-2026-10-23.json` |
+| PostgreSQL واقعی و بازیابی | `docs/testing/04-real-postgres-restore.md` |
 | عملیات | `docs/operations/01-runbook.md` |
 | نقشه راه | `docs/roadmap/01-phases.md` |
 | تصمیم‌ها (ADR) | `docs/decisions/0001-stack.md` … `0003-packaging.md` |
@@ -174,11 +175,13 @@ npm run verify:win                                           # بازبینی ا
 
 1. **استقرار اینترنتی انجام نشده**؛ آدرس HTTPS عمومی وجود ندارد (BLOCKED).
 2. **فایل اجرایی ویندوز روی ویندوز واقعی اجرا نشده** (NOT RUN)؛ همان بسته روی لینوکس اجرا شد.
-3. **APK اندروید ساخته نشده** (BLOCKED).
+3. **APK اندروید و نصب‌کننده‌ی (installer) ویندوز ساخته نشده‌اند** (BLOCKED / NOT BUILT)؛
+   برای ویندوز همان فایل تک‌فایل بدون نیاز به نصب ارائه شده است.
 4. آزمون E2E مرورگری و قطع واقعی شبکه **انجام شده** (۲۳/۲۳ PASS)؛ آنچه باقی است: اجرا روی
    ویندوز واقعی، آزمون بار روی PostgreSQL مدیریت‌شده و بازیابی روی سرور جداگانه.
 5. MFA فقط از طریق API فعال می‌شود؛ پیامک/ایمیل واقعی ندارد.
-6. آزمون بار روی PGlite (نه PostgreSQL مدیریت‌شده) و به‌صورت مشورتی است.
+6. آزمون بار روی **PostgreSQL 16.2 واقعی** انجام شد (۰ خطا، ۰ پاسخ غیر۲xx) اما روی یک ماشین
+   و بدون TLS؛ آزمون بار روی سرویس مدیریت‌شده انجام نشده است.
 
 ## ساخت دارایی‌ها (بازتولیدپذیر)
 
