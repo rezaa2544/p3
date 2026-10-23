@@ -6,18 +6,18 @@
 
 | فایل | لینک | حجم |
 |---|---|---|
-| `payesh2-standalone-html.zip` (HTML + راهنما) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip | ۱۱۴ KB |
+| `payesh2-standalone-html.zip` (HTML + راهنما) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip | ۱۱۵ KB |
 | `payesh2-win-x64.zip` (EXE ویندوز x64 + راهنما) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip | ۴۴ MB |
-| `payesh2-standalone.html` (خام، بدون ZIP) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html | ۳۸۲ KB |
+| `payesh2-standalone.html` (خام، بدون ZIP) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html | ۳۸۵ KB |
 
 ## sha256 (بررسی سلامت دانلود)
 
 ```text
-870e4597d31d9244b0f92983c7d3302f685d90d6ee029dbdff784fe26206f6b8  payesh2-standalone-html.zip
-ff13e3902bb12da8658b233670efaa0588949c2245d88aff402bd99d2526f9c1  payesh2-win-x64.zip
-7b2de672388d1e147bb65f1336ff61b523af8db5e6392b57cc924a9858bff1ec  payesh2-standalone.html
-83449d361bffc7bac642d30fa81898a66d32d74c71f9e3d6554eab41b23aa880  payesh2.exe   (داخل ZIP ویندوز)
-2fe5ac08acd48698acacc9eb7018556a38bc588880c3710ce3b910155585f431  payesh2       (لینوکس، ساخت محلی)
+fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af  payesh2-standalone-html.zip
+f90196db50686c7a535fb3ddfe13f0ad691c32d395bf0c9cf6c47984b7f24f1a  payesh2-win-x64.zip
+05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c  payesh2-standalone.html
+c15dc6bb33ca40606e5dc0c54f38e0ba8f1432febb8760ff8d94070bb9e39159  payesh2.exe   (داخل ZIP ویندوز)
+e2fecf5637db320af2e4a55083bea0b71f59bea2ccb4004146b593b3caa10f39  payesh2       (لینوکس، ساخت محلی)
 ```
 
 بررسی در ویندوز (PowerShell):
@@ -49,7 +49,7 @@ npm run test:e2e:standalone  # آزمون مرورگر واقعی (نیازمن�
 ## فراداده‌ی ساخت
 
 - Node بسته‌بندی‌شده: **26.12.1** (باینری رسمی از `node-win-x64` / `node-linux-x64`)
-- بیلد ویندوز: `83449d36` — بیلد لینوکس: `03a0f614`
+- بیلد ویندوز: `c2bbb585a308` — بیلد لینوکس: `cd3c1290cf65`
 - راستی‌آزمایی بیلد لینوکسی: مهاجرت ۰۰۱+۰۰۲ اعمال شد، `GET /api/health` →
   `{"status":"ok","db":"ok","migrations":2}`، `GET /standalone.html` → ۲۰۰ و ۳۹۱٬۷۲۷ بایت،
   ورود مدیر با رمز تصادفی ۲۰۰.

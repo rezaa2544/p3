@@ -177,7 +177,7 @@ export function registerAttendanceRoutes(app: FastifyInstance): void {
         if (!cls[0]) throw notFound('کلاس یافت نشد');
       }
       const items = await db.query(
-        `select a.id, a.student_id, s.first_name, s.last_name, a.day, a.period_no, a.status, a.note,
+        `select a.id, a.student_id, s.first_name, s.last_name, a.day::text as day, a.period_no, a.status, a.note,
                 a.source, a.recorded_at, a.captured_at, u.full_name as recorded_by_name
            from attendance_records a
            join students s on s.id = a.student_id
@@ -242,6 +242,28 @@ export function registerAttendanceRoutes(app: FastifyInstance): void {
     });
   });
 
+  app.get('/attendance/:id/revisions', async (req) => {
+    const auth = requirePerm(req, 'attendance.read');
+    const { id } = parse(z.object({ id: uuid }), req.params);
+    return schoolTx(auth, async (db) => {
+      const record = await db.one<{ id: string; student_id: string }>(
+        'select id, student_id from attendance_records where id = $1 and school_id = $2',
+        [id, auth.schoolId],
+      );
+      if (!record) throw notFound('رکورد حضور یافت نشد');
+      await assertCanViewStudent(db, auth, record.student_id);
+      const items = await db.query(
+        `select r.id, r.old_status, r.new_status, r.reason, r.changed_at, u.full_name as changed_by_name
+           from attendance_revisions r
+           join users u on u.id = r.changed_by
+          where r.record_id = $1
+          order by r.changed_at desc`,
+        [id],
+      );
+      return { items };
+    });
+  });
+
   app.get('/attendance/report', async (req) => {
     const auth = requirePerm(req, 'attendance.read');
     const qs = req.query as { from?: string; to?: string; classId?: string };
@@ -291,7 +313,7 @@ export function registerAttendanceRoutes(app: FastifyInstance): void {
       if (!studentId) throw notFound('پرونده دانش‌آموزی یافت نشد');
       if (!can(auth, 'attendance.read')) throw forbidden();
       const items = await db.query(
-        `select id, day, period_no, status, note from attendance_records
+        `select id, day::text as day, period_no, status, note from attendance_records
           where school_id = $1 and student_id = $2
             and ($3::date is null or day >= $3::date) and ($4::date is null or day <= $4::date)
           order by day desc, period_no limit 500`,

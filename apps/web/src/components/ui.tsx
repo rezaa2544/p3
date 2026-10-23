@@ -167,15 +167,26 @@ export function Modal({
   footer?: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  /**
+   * این افکت فقط با باز/بسته شدن اجرا می‌شود، نه با هر رندر.
+   * قبلاً `onClose` در وابستگی‌ها بود و چون والد تابع تازه می‌ساخت، با هر کلید
+   * تایپ‌شده دوباره اجرا می‌شد و فوکوس را روی نخستین عنصر قابل فوکوس (دکمه‌ی ✕ در
+   * سرصفحه) می‌گذاشت؛ در نتیجه تایپ فارسی با فاصله، دکمه‌ی ✕ را فعال و مودال را
+   * می‌بست. اکنون فوکوس یک‌بار روی نخستین فیلد فرم می‌رود و پایدار می‌ماند.
+   */
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', onKey);
-    ref.current?.querySelector<HTMLElement>('input, select, textarea, button')?.focus();
+    const firstField = ref.current?.querySelector<HTMLElement>('input, select, textarea');
+    (firstField ?? ref.current)?.focus();
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>

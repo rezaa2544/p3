@@ -14,13 +14,24 @@ import {
 } from '../lib/offline.js';
 import { ATTENDANCE_LABELS, formatDate, formatDateTime, formatNumber, fullName, statusBadgeClass, todayISO } from '../lib/format.js';
 import type { AttendanceRecord, Options, Student } from '../lib/types.js';
-import { Alert, Badge, Button, Card, EmptyState, Field, Loading, Modal, PageHeader, Select, toast } from '../components/ui.js';
+import { Alert, Badge, Button, Card, EmptyState, Field, Loading, Modal, PageHeader, Select, Textarea, toast } from '../components/ui.js';
+import { useAuth } from '../state/auth.js';
 
 type DraftStatus = Record<string, string>;
 
 const STATUS_ORDER = ['present', 'absent', 'late', 'excused', 'sick', 'early_leave'];
 
+type Revision = {
+  id: string;
+  old_status: string;
+  new_status: string;
+  reason: string;
+  created_at: string;
+  changed_by_name: string;
+};
+
 export function AttendancePage() {
+  const { has } = useAuth();
   const [params, setParams] = useSearchParams();
   const [options, setOptions] = useState<Options | null>(null);
   const [classId, setClassId] = useState(params.get('classId') ?? '');
@@ -36,6 +47,12 @@ export function AttendancePage() {
   const [savedInfo, setSavedInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [conflict, setConflict] = useState<QueuedOperation | null>(null);
+  const [correcting, setCorrecting] = useState<AttendanceRecord | null>(null);
+  const [correctStatus, setCorrectStatus] = useState('present');
+  const [correctReason, setCorrectReason] = useState('');
+  const [correctError, setCorrectError] = useState<string | null>(null);
+  const [correctBusy, setCorrectBusy] = useState(false);
+  const [revisions, setRevisions] = useState<Revision[] | null>(null);
   const [showQueue, setShowQueue] = useState(false);
 
   const refreshQueue = useCallback(async () => {
@@ -114,6 +131,49 @@ export function AttendancePage() {
   useEffect(() => {
     void loadExisting();
   }, [loadExisting]);
+
+  const canCorrect = has('attendance.correct');
+
+  const openCorrection = async (record: AttendanceRecord) => {
+    setCorrecting(record);
+    setCorrectStatus(record.status);
+    setCorrectReason('');
+    setCorrectError(null);
+    setRevisions(null);
+    try {
+      const res = await api<{ items: Revision[] }>(`/attendance/${record.id}/revisions`);
+      setRevisions(res.items);
+    } catch {
+      setRevisions([]);
+    }
+  };
+
+  const submitCorrection = async () => {
+    if (!correcting) return;
+    if (correctStatus === correcting.status) {
+      setCorrectError('وضعیت جدید با وضعیت فعلی یکسان است.');
+      return;
+    }
+    if (correctReason.trim().length < 5) {
+      setCorrectError('دلیل اصلاح الزامی است (حداقل ۵ نویسه).');
+      return;
+    }
+    setCorrectBusy(true);
+    setCorrectError(null);
+    try {
+      await api(`/attendance/${correcting.id}`, {
+        method: 'PUT',
+        body: { status: correctStatus, reason: correctReason.trim() },
+      });
+      toast('اصلاح حضور ثبت شد و در تاریخچه‌ی تغییرات ماند', 'success');
+      await loadExisting();
+      setCorrecting(null);
+    } catch (e) {
+      setCorrectError(errorMessage(e));
+    } finally {
+      setCorrectBusy(false);
+    }
+  };
 
   const className = options?.classes.find((c) => c.id === classId)?.title ?? '';
 
@@ -341,6 +401,7 @@ export function AttendancePage() {
                   <th>منبع</th>
                   <th>زمان ثبت سرور</th>
                   <th>ثبت‌کننده</th>
+                  {canCorrect ? <th>عملیات</th> : null}
                 </tr>
               </thead>
               <tbody>
@@ -353,6 +414,13 @@ export function AttendancePage() {
                     <td>{r.source === 'offline' ? 'آفلاین همگام‌شده' : 'آنلاین'}</td>
                     <td>{formatDateTime(r.recorded_at)}</td>
                     <td>{r.recorded_by_name}</td>
+                    {canCorrect ? (
+                      <td>
+                        <Button size="sm" onClick={() => void openCorrection(r)}>
+                          اصلاح
+                        </Button>
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>
@@ -404,6 +472,64 @@ export function AttendancePage() {
             ))}
           </div>
         )}
+      </Modal>
+
+      <Modal
+        open={Boolean(correcting)}
+        onClose={() => setCorrecting(null)}
+        title="اصلاح حضور"
+        footer={
+          <>
+            <Button variant="primary" onClick={() => void submitCorrection()} disabled={correctBusy}>
+              {correctBusy ? 'در حال ذخیره…' : 'ثبت اصلاح'}
+            </Button>
+            <Button onClick={() => setCorrecting(null)}>انصراف</Button>
+          </>
+        }
+      >
+        {correcting ? (
+          <>
+            <p className="small soft">
+              {fullName(correcting.first_name, correcting.last_name)} — {formatDate(correcting.day)} — زنگ{' '}
+              {formatNumber(correcting.period_no)}
+            </p>
+            {correctError ? <Alert tone="error">{correctError}</Alert> : null}
+            <Field label="وضعیت جدید" htmlFor="correct-status">
+              <Select id="correct-status" value={correctStatus} onChange={(e) => setCorrectStatus(e.target.value)}>
+                {STATUS_ORDER.map((status) => (
+                  <option key={status} value={status}>
+                    {ATTENDANCE_LABELS[status]}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="دلیل اصلاح (الزامی، حداقل ۵ نویسه)" htmlFor="correct-reason">
+              <Textarea
+                id="correct-reason"
+                value={correctReason}
+                onChange={(e) => setCorrectReason(e.target.value)}
+                style={{ minHeight: 70 }}
+              />
+            </Field>
+            <h3 className="small" style={{ marginTop: 12 }}>
+              تاریخچه‌ی تغییرات
+            </h3>
+            {revisions === null ? <Loading label="در حال خواندن تاریخچه…" /> : null}
+            {revisions && revisions.length === 0 ? (
+              <p className="small soft mb-0">این رکورد تا کنون اصلاح نشده است.</p>
+            ) : null}
+            {revisions && revisions.length > 0 ? (
+              <ul className="small" style={{ paddingInlineStart: 18 }}>
+                {revisions.map((rev) => (
+                  <li key={rev.id}>
+                    {formatDateTime(rev.created_at)} — {ATTENDANCE_LABELS[rev.old_status] ?? rev.old_status} به{' '}
+                    {ATTENDANCE_LABELS[rev.new_status] ?? rev.new_status} — {rev.changed_by_name} — «{rev.reason}»
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
+        ) : null}
       </Modal>
 
       <Modal open={Boolean(conflict)} onClose={() => setConflict(null)} title="تعارض همگام‌سازی">

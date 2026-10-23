@@ -8,7 +8,8 @@
 - API با Fastify 5 + TypeScript + SQL خام و RLS
 - ۹ نقش سازمانی: مدیر مجموعه، مدیر مدرسه، معاون، مسئول فناوری، دبیر، مشاور، مالی،
   دانش‌آموز، والد
-- آزمون‌ها: **۸۷ آزمون API** و **۲۹ آزمون رابط** (همه سبز) — گزارش کامل در
+- آزمون‌ها: **۹۶ آزمون API**، **۳۳ آزمون رابط** و **۳۰ بررسی E2E در مرورگر واقعی**
+  (۷ تک‌فایل + ۲۳ جریان محصول، شامل قطع واقعی شبکه) — گزارش در
   [`docs/testing/01-strategy.md`](docs/testing/01-strategy.md)
 - داوری شواهد: **READY FOR LIMITED PILOT** — جزئیات و محدودیت‌ها در
   [`docs/evidence-gate.md`](docs/evidence-gate.md)
@@ -25,8 +26,8 @@
 | قالب | لینک دانلود مستقیم | حجم | وضعیت |
 |---|---|---|---|
 | **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
-| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ ساخته شد و `/standalone.html` دارد؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
-| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۲ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
+| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ بسته‌بندی و بازبینی ایستای PE (x64)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
+| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۵ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
 | اپلیکیشن اندروید (APK) | — | — | ⛔ **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
 | آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
 | نصب‌کننده‌ی ویندوز (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — نسخه‌ی تک‌فایل جایگزین شد |
@@ -35,9 +36,9 @@
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
-payesh2-win-x64.zip          ff13e3902bb12da8658b233670efaa0588949c2245d88aff402bd99d2526f9c1
-payesh2-standalone-html.zip  870e4597d31d9244b0f92983c7d3302f685d90d6ee029dbdff784fe26206f6b8
-payesh2-standalone.html      7b2de672388d1e147bb65f1336ff61b523af8db5e6392b57cc924a9858bff1ec
+payesh2-win-x64.zip          f90196db50686c7a535fb3ddfe13f0ad691c32d395bf0c9cf6c47984b7f24f1a
+payesh2-standalone-html.zip  fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af
+payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c
 ```
 
 > چرا ZIP و نه EXE خام؟ حد مجاز هر فایل در گیت‌هاب ۱۰۰MB است و EXE خام ۱۱۹MB است؛ ZIP آن
@@ -156,17 +157,26 @@ scrypt برای رمز، کوکی نشست `HttpOnly`/`SameSite`، CSRF اجبا
 
 ```bash
 npm run typecheck && npm run lint
-npm run test:api     # ۸۷ تست
-npm run test:web     # ۲۹ تست
+npm run test:api              # ۹۶ تست API (PGlite واقعی)
+npm run test:web              # ۳۳ تست رابط
 npm run build
+
+# آزمون با مرورگر واقعی (نیازمند سرور در حال اجرا و Chromium)
+E2E_BASE=http://127.0.0.1:3000 npm run test:e2e:standalone   # ۷ بررسی
+E2E_BASE=http://127.0.0.1:3000 npm run test:e2e:product      # ۲۳ بررسی
+npm run verify:win                                           # بازبینی ایستای EXE ویندوز
 ```
+
+نتیجه‌ی آخرین اجرا (Chromium headless ۱۳۱): **۷/۷** و **۲۳/۲۳ PASS**؛ جزئیات در
+[`docs/testing/03-product-e2e.md`](docs/testing/03-product-e2e.md).
 
 ## محدودیت‌های نسخه ۰.۱.۰ (صادقانه)
 
 1. **استقرار اینترنتی انجام نشده**؛ آدرس HTTPS عمومی وجود ندارد (BLOCKED).
 2. **فایل اجرایی ویندوز روی ویندوز واقعی اجرا نشده** (NOT RUN)؛ همان بسته روی لینوکس اجرا شد.
 3. **APK اندروید ساخته نشده** (BLOCKED).
-4. آزمون E2E مرورگری و قطع واقعی شبکه انجام نشده (NOT RUN).
+4. آزمون E2E مرورگری و قطع واقعی شبکه **انجام شده** (۲۳/۲۳ PASS)؛ آنچه باقی است: اجرا روی
+   ویندوز واقعی، آزمون بار روی PostgreSQL مدیریت‌شده و بازیابی روی سرور جداگانه.
 5. MFA فقط از طریق API فعال می‌شود؛ پیامک/ایمیل واقعی ندارد.
 6. آزمون بار روی PGlite (نه PostgreSQL مدیریت‌شده) و به‌صورت مشورتی است.
 
@@ -176,6 +186,8 @@ npm run build
 npm run build                 # وب + API
 npm run artifact:html         # → artifacts/payesh2-standalone.html
 npm run artifact:exe          # → artifacts/payesh2.exe (ویندوز؛ روی لینوکس هم ساخته می‌شود)
+npm run verify:win            # بازبینی PE/معماری/جاسازی HTML
+npm run release:assets        # هر دو ZIP + checksums.json
 ```
 
 برای راستی‌آزمایی محلی همان بسته: `node scripts/build-exe.mjs --target linux-x64` و سپس

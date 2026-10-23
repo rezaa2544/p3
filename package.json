@@ -23,7 +23,7 @@
     "artifact:html": "npm run build:standalone && node scripts/build-standalone-html.mjs",
     "artifact:exe": "node scripts/build-exe.mjs --target win-x64",
     "test:e2e:standalone": "node scripts/e2e-standalone.mjs",
-    "release:assets": "npm run build && npm run artifact:html && npm run artifact:exe && node scripts/build-release-zips.mjs",
+    "release:assets": "npm run build && npm run artifact:html && npm run artifact:exe && npm run verify:win && node scripts/build-release-zips.mjs",
     "start": "npm --workspace apps/api run start",
     "lint": "eslint .",
     "typecheck": "npm --workspace apps/api run typecheck && npm --workspace apps/web run typecheck",
@@ -31,7 +31,9 @@
     "test:api": "npm --workspace apps/api run test",
     "test:web": "npm --workspace apps/web run test",
     "test:load": "npm --workspace apps/api run test:load",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "test:e2e:product": "node scripts/e2e-product.mjs",
+    "verify:win": "node scripts/verify-win-artifact.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

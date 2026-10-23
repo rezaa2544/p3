@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -109,5 +110,29 @@ describe('صفحه ورود', () => {
     expect(screen.getByLabelText('رمز عبور')).toHaveAttribute('type', 'password');
     expect(screen.getByRole('button', { name: 'ورود' })).toBeInTheDocument();
     expect(document.documentElement.dir === '' || document.documentElement.dir === 'rtl').toBe(true);
+  });
+});
+
+describe('Modal — پایداری فوکوس هنگام تایپ', () => {
+  function Harness() {
+    const [open, setOpen] = useState(true);
+    const [value, setValue] = useState('');
+    // مانند مصرف‌کننده‌های واقعی، هر رندر یک تابع تازه برای onClose ساخته می‌شود
+    return (
+      <Modal open={open} onClose={() => setOpen(false)} title="اصلاح حضور" footer={<button type="button">ثبت</button>}>
+        <label htmlFor="reason">دلیل</label>
+        <textarea id="reason" value={value} onChange={(e) => setValue(e.target.value)} />
+      </Modal>
+    );
+  }
+
+  it('تایپ متن فارسی با فاصله مودال را نمی‌بندد و فوکوس روی دکمه‌ی ✕ نمی‌رود', async () => {
+    render(<Harness />);
+    const field = screen.getByLabelText('دلیل');
+    await userEvent.click(field);
+    await userEvent.keyboard('ثبت اشتباه در زنگ اول');
+    expect(screen.getByLabelText('دلیل')).toHaveValue('ثبت اشتباه در زنگ اول');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(document.activeElement).toBe(field);
   });
 });
