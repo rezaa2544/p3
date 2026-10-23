@@ -21,16 +21,18 @@
 > نسخه: **v0.1.0** (۲۰۲۶-۱۰-۲۳) · [صفحه‌ی انتشار](https://github.com/rezaa2544/p3/releases/tag/v0.1.0)
 >
 > لینک‌های زیر **مستقیم** هستند: با کلیک، دانلود همان لحظه شروع می‌شود
-> (مسیر `raw` گیت‌هاب؛ برای باینری، ZIP استفاده شده تا حجم زیر حد مجاز مخزن بماند).
+> (لینک‌ها از صفحهٔ **Releases** می‌آیند؛ همان بایت‌هایی که در `artifacts/checksums.json` هش
+> شده‌اند. اگر Releases در دسترس نبود، همان فایل‌ها در مسیر `artifacts/` مخزن هم هستند.)
 
 | قالب | لینک دانلود مستقیم | حجم | وضعیت |
 |---|---|---|---|
-| **ویندوز x64 — برنامهٔ میزکار (ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ نصب per-user + میان‌بر + بدون پنجرهٔ کنسول (زیرسیستم GUI، آیکون و نسخهٔ جاسازی‌شده، بازبینی ایستای PE ۱۴/۱۴)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
-| **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
-| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۵ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
-| **اندروید (APK امضاشده)** | **[⬇ payesh2-android.apk](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-android.apk)** | ۱۴۱ KB | ✅ ساخته و امضا شد (v2+v3)، بازبینی ایستا ۱۹/۱۹ PASS؛ اجرا روی گوشی **(NOT RUN)** |
+| **ویندوز x64 — برنامهٔ میزکار (ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-win-x64.zip)** | ۴۴ MB | ✅ نصب per-user + میان‌بر + بدون پنجرهٔ کنسول (زیرسیستم GUI، آیکون و نسخهٔ جاسازی‌شده، بازبینی ایستای PE ۱۴/۱۴)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
+| **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
+| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-standalone.html) | ۳۸۵ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
+| **اندروید (APK امضاشده)** | **[⬇ payesh2-android.apk](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-android.apk)** | ۱۴۱ KB | ✅ ساخته و امضا شد (v2+v3)، بازبینی ایستا ۱۹/۱۹ PASS؛ اجرا روی گوشی **(NOT RUN)** |
 | آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
 | نصب‌کنندهٔ جداگانه (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — همان EXE خودش نصب می‌کند (بدون UAC، بدون نصب‌کنندهٔ سوم) |
+| صفحهٔ انتشار (همهٔ دارایی‌ها + هش‌ها) | [Release v0.1.0](https://github.com/rezaa2544/p3/releases/tag/v0.1.0) | — | ✅ ۱۲ دارایی آپلود‌شده توسط CI |
 | نسخهٔ لینوکس x64 | [ساخت محلی](artifacts/BUILD.md) | ۱۶۲ MB | ✅ ساخته و کامل آزموده شد؛ به‌دلیل حجم در گیت نیست |
 
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
@@ -43,12 +45,13 @@ payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d12
 ```
 
 > چرا ZIP و نه EXE خام؟ حد مجاز هر فایل در گیت‌هاب ۱۰۰MB است و EXE خام ۱۱۹MB است؛ ZIP آن
-> ۴۴MB می‌شود. آپلود در بخش Releases همچنان BLOCKED است (میزبان `uploads.github.com` از محیط
-> ساخت در دسترس نیست)؛ به‌جای لینک ساختگی، فایل در مخزن و با لینک `raw` منتشر شده است.
+> ۴۴MB می‌شود. دارایی‌ها در [Release v0.1.0](https://github.com/rezaa2544/p3/releases/tag/v0.1.0)
+> منتشر شده‌اند (۱۲ فایل، `state=uploaded`)؛ آپلود از رانر CI انجام می‌شود چون
+> `uploads.github.com` از محیط توسعه پاسخ نمی‌دهد — `.github/workflows/release.yml`.
 
 ### ۱) ویندوز: نصب و اجرا (بدون کنسول، بدون Node)
 
-1. [`payesh2-win-x64.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)
+1. [`payesh2-win-x64.zip`](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-win-x64.zip)
    را دانلود و باز کنید و روی `Payesh2.exe` دابل‌کلیک کنید.
    ساخت محلی: `npm ci && npm run build && npm run artifact:exe`
 2. برنامه خودش را برای همان کاربر نصب می‌کند — **بدون پنجرهٔ CMD و بدون UAC**:
@@ -71,7 +74,7 @@ payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d12
 
 ### ۲) اندروید: نصب APK
 
-1. فایل [`payesh2-android.apk`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-android.apk)
+1. فایل [`payesh2-android.apk`](https://github.com/rezaa2544/p3/releases/download/v0.1.0/payesh2-android.apk)
    (۱۴۱ KB) را روی گوشی/تبلت دانلود کنید.
 2. اگر اندروید هشدار «نصب از منابع ناشناس» داد، برای همین فایل اجازه بدهید
    (اپ از Google Play نیامده و با کلید پایلوت امضا شده است).

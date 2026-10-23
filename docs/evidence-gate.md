@@ -68,7 +68,7 @@
 | آدرس HTTPS عمومی محصول | **BLOCKED** | هیچ میزبان/دامنه‌ای در اختیار نبود؛ ارائه‌ی URL ساختگی ممنوع |
 | ساخت دارایی‌ها (EXE/Linux/HTML) | PASS | ساخته و هش شدند؛ `artifacts/BUILD.md` |
 | دانلود مستقیم دارایی‌ها از مخزن | **PASS** | `artifacts/payesh2-standalone-html.zip`، `artifacts/payesh2-win-x64.zip`، `artifacts/payesh2-standalone.html` با لینک `raw` (هش‌ها در `artifacts/BUILD.md`) |
-| آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط پاسخ نمی‌دهد (بررسی `curl` → 000) |
+| آپلود دارایی در GitHub Release | **PASS** | ۱۲ دارایی در <https://github.com/rezaa2544/p3/releases/tag/v0.1.0> با `state=uploaded` و حجم‌های برابر `artifacts/checksums.json` — کار `.github/workflows/release.yml` (اجرای 40036524391). خودِ محیط توسعه به `uploads.github.com` دسترسی ندارد (`curl` → SSL_ERROR_SYSCALL)، بنابراین آپلود از رانر انجام می‌شود؛ بایت‌های دانلودی از همین محیط بررسی نشده است |
 | APK اندروید (ساخت، امضا، بازبینی ایستا) | **PASS** | `artifacts/payesh2-android.apk` — ۱۴۴٬۶۸۶ بایت، sha256 `83e73f12…e487`، امضای v2+v3، بازبینی ایستا ۱۹/۱۹؛ ساخته‌شده در [اجرای CI 40035040606](https://github.com/rezaa2544/p3/actions/runs/40035040606) |
 | نصب و اجرای APK روی دستگاه/شبیه‌ساز | **NOT RUN** | نه دستگاه اندروید و نه AVD در محیط ساخت نبود؛ `adb` هم در دسترس نیست — `docs/testing/07-android.md` |
 | انتشار APK در Google Play | **BLOCKED** | نیاز به حساب توسعه‌دهنده/بازبینی گوگل؛ برای پایلوت مدرسه لازم نیست |
@@ -94,7 +94,8 @@
 سرور جداگانه تأیید شده‌اند. سه چیز مانع «READY FOR USE» است و به‌صراحت
 اعلام می‌شود:
 
-1. هیچ استقرار اینترنتی با TLS و دامنه انجام نشده (BLOCKED).
+1. هیچ استقرار اینترنتی با TLS و دامنه انجام نشده (BLOCKED) — دارایی‌ها روی GitHub Release
+   هستند، اما «آدرس HTTPS خود سامانه» نیست.
 2. اجرای فایل اجرایی روی ویندوز واقعی انجام نشده (NOT RUN)؛ فقط بازبینی ایستای PE و اجرای
    همان کد به‌صورت بسته‌بندی‌شده روی لینوکس انجام شده است.
 3. APK اندروید **ساخته و امضا شد** و بازبینی ایستای آن ۱۹/۱۹ PASS است، اما روی هیچ گوشی یا
@@ -113,7 +114,8 @@
 | PR #1 (محصول کامل) | https://github.com/rezaa2544/p3/pull/1 — ادغام‌شده در `f59235b` |
 | PR #2 (توزیع صادقانه دارایی‌ها) | https://github.com/rezaa2544/p3/pull/2 — ادغام‌شده در `f60a1af` |
 | CI سبز (آخرین اجرا روی شاخه) | https://github.com/rezaa2544/p3/actions/runs/39993584837 |
-| Release v0.1.0 | https://github.com/rezaa2544/p3/releases/tag/v0.1.0 |
+| Release v0.1.0 (۱۲ دارایی واقعی) | https://github.com/rezaa2544/p3/releases/tag/v0.1.0 |
+| کار انتشار دارایی‌ها | `.github/workflows/release.yml` — اجرای 40036524391 |
 | گزارش خام آزمون بار | `docs/testing/load-report-2026-10-23.json` |
 | گزارش E2E جریان‌های محصول | `docs/testing/product-e2e.json` (۲۳/۲۳ PASS) |
 | گزارش E2E نسخه‌ی تک‌فایل | `docs/testing/standalone-e2e.json` (۷/۷ PASS) |
