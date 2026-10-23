@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-10-23T20:54:30.452Z",
+  "base": "http://127.0.0.1:3400",
+  "engine": "axe-core 4.x — WCAG 2.1 A/AA",
+  "chrome": "/tmp/chromium",
+  "status": "PASS",
+  "summary": {
+    "pages": 12,
+    "violations": 0,
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0
+  },
+  "results": [
+    {
+      "page": "ورود",
+      "violations": [],
+      "passes": 18
+    },
+    {
+      "page": "پیمایش صفحه‌کلید (ورود)",
+      "focusTrail": [
+        "password"
+      ],
+      "violations": [],
+      "passes": 1
+    },
+    {
+      "page": "داشبورد",
+      "violations": [],
+      "passes": 22
+    },
+    {
+      "page": "حضور و غیاب",
+      "violations": [],
+      "passes": 27
+    },
+    {
+      "page": "گزارش حضور",
+      "violations": [],
+      "passes": 24
+    },
+    {
+      "page": "ارزیابی و نمرات",
+      "violations": [],
+      "passes": 23
+    },
+    {
+      "page": "کارنامه",
+      "violations": [],
+      "passes": 23
+    },
+    {
+      "page": "تکالیف",
+      "violations": [],
+      "passes": 20
+    },
+    {
+      "page": "اطلاعیه‌ها",
+      "violations": [],
+      "passes": 20
+    },
+    {
+      "page": "دانش‌آموزان",
+      "violations": [],
+      "passes": 24
+    },
+    {
+      "page": "کاربران و نقش‌ها",
+      "violations": [],
+      "passes": 24
+    },
+    {
+      "page": "گزارش‌های مدیریتی",
+      "violations": [],
+      "passes": 22
+    }
+  ],
+  "violations": []
+}

@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-23T20:25:31.314Z",
+  "generatedAt": "2026-10-23T20:51:47.702Z",
   "file": "artifacts/payesh2.exe",
   "bytes": 124650496,
-  "sha256": "c15dc6bb33ca40606e5dc0c54f38e0ba8f1432febb8760ff8d94070bb9e39159",
+  "sha256": "61512ca69b07eea1c9c9d9cfa1067ebb9dbf7778a3a2a90f582befe57faae101",
   "architecture": "win32-x64",
   "status": "PASS",
   "scope": "بازبینی ایستای فایل؛ اجرا روی ویندوز واقعی انجام نشده است (NOT RUN)",
