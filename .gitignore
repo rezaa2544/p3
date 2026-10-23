@@ -15,3 +15,4 @@ apps/api/dist/
 apps/api/.pglite/
 desktop/release/
 *.tsbuildinfo
+apps/web/dist-standalone/
