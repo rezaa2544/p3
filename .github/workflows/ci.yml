@@ -132,3 +132,89 @@ jobs:
             docs/testing/evidence
             desktop-run.log
           retention-days: 7
+
+  android:
+    name: ساخت APK اندروید
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    env:
+      KS_PASS: payesh2-pilot-2026
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: نصب اجزای Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "SDK=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then SDKMANAGER="$SDK/cmdline-tools/latest/bin/sdkmanager"; fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0" > /tmp/sdkmanager.log 2>&1 || { tail -20 /tmp/sdkmanager.log; exit 1; }
+          echo "build-tools:"; ls "$SDK/build-tools"
+      - name: ساخت APK (release، بدون امضا)
+        working-directory: apps/android
+        run: |
+          set -o pipefail
+          gradle --no-daemon --console=plain assembleRelease 2>&1 | tee /tmp/gradle.log
+      - name: نمایش خطاهای ساخت در صورت شکست
+        if: failure()
+        run: |
+          grep -E "error:|FAILURE:|What went wrong|Caused by" -m 25 /tmp/gradle.log             | sed 's/^/::error title=gradle::/' || echo "::error title=gradle::بدون لاگ ساخت"
+      - name: امضا و بازبینی APK
+        run: |
+          set -euo pipefail
+          BT="$SDK/build-tools/34.0.0"
+          KS="$RUNNER_TEMP/payesh2-pilot.keystore"
+          UNSIGNED="apps/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          ls -l "$UNSIGNED"
+          keytool -genkeypair -keystore "$KS" -alias payesh2 -keyalg RSA -keysize 3072 \
+            -validity 10000 -storepass "$KS_PASS" -keypass "$KS_PASS" \
+            -dname "CN=Payesh 2 Pilot, OU=School, O=Payesh 2, C=IR"
+          "$BT/zipalign" -f -p 4 "$UNSIGNED" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" \
+            --min-sdk-version 24 --out artifacts/payesh2-android.apk "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" verify --print-certs --verbose artifacts/payesh2-android.apk \
+            > artifacts/payesh2-android-verify.txt
+          "$BT/aapt2" dump badging artifacts/payesh2-android.apk \
+            > artifacts/payesh2-android-badging.txt
+          node scripts/verify-apk.mjs
+      - name: خلاصهٔ نتیجهٔ بازبینی APK (قابل خواندن از API)
+        if: always()
+        run: |
+          node -e '
+          const fs = require("fs");
+          try {
+            const r = JSON.parse(fs.readFileSync("artifacts/verify-apk.json", "utf8"));
+            const rows = (r.checks ?? []).map((c) => `${c.status}: ${c.name} — ${c.detail}`);
+            const text = `${r.status} ${r.passed}/${r.total} | ${r.file} ${r.bytes}B sha256=${r.sha256} | ` + rows.join(" | ");
+            console.log(text);
+            console.log((r.status === "PASS" ? "::notice title=apk::" : "::error title=apk::") + text.slice(0, 900));
+          } catch (e) {
+            console.log("::error title=apk::گزارش بازبینی APK پیدا نشد: " + e.message);
+          }
+          '
+      # چرا فقط اجرای دستی؟ اگر هر push فایل APK را دوباره بسازد و کامیت کند، امضا/بایت‌ها
+      # تغییر می‌کند و هش منتشرشده در مستندات بی‌اعتبار می‌شود. پس در push فقط «می‌سازیم و
+      # بازبینی می‌کنیم» و ثبت دارایی تنها با اجرای دستی (workflow_dispatch) انجام می‌شود.
+      - name: ثبت APK و فراداده در شاخه (فقط اجرای دستی)
+        if: success() && github.event_name == 'workflow_dispatch'
+        run: |
+          set -euo pipefail
+          node scripts/apk-meta.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f artifacts/payesh2-android.apk artifacts/payesh2-android.json \
+            artifacts/payesh2-android-verify.txt artifacts/payesh2-android-badging.txt
+          if git diff --cached --quiet; then echo "APK بدون تغییر است"; exit 0; fi
+          git commit -m "build(android): APK امضاشده + فراداده و بازبینی [apk]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

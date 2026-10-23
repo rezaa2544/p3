@@ -32,6 +32,7 @@
 | فایل اجرایی ویندوز بدون پنجرهٔ کنسول | `scripts/lib/pe.mjs` (تغییر زیرسیستم PE) + `scripts/build-exe.mjs` | `npm run verify:win` → زیرسیستم `GUI`، ۱۳/۱۳ PASS — `artifacts/payesh2-win-static.json` | PASS (ایستا) |
 | آیکون و اطلاعات نسخهٔ برنامه در ویندوز | `scripts/lib/pe.mjs` (`resedit`)، `artifacts/payesh2.ico` | `verify:win` → «آیکون جاسازی‌شده» و «اطلاعات نسخه» | PASS (ایستا) |
 | اعتبارنامهٔ نخستین ورود میزکار (۱۲۳۴۵۶/۱۲۳۴۵۶) + تغییر رمز اجباری | `services/first-run.ts` (پرچم صریح)، `desktop/shell-plan.ts`، ADR 0005 | `test/desktop-bootstrap.test.ts` (۴) — رد رمز کوتاه بدون پرچم، ساخت با پرچم، رد رمز کوتاه در تغییر رمز، از کار افتادن رمز قدیمی | PASS |
+| اپلیکیشن اندروید (APK امضاشده، WebView با نشانی سرور قابل‌تنظیم) | `apps/android/` (+ `assets/offline.html`) و `.github/workflows/ci.yml` (کار اندروید) | `scripts/verify-apk.mjs` → **۱۹/۱۹ PASS** در CI و همین‌جا + بازبینی مانیفست با `aapt2 dump xmltree` | PASS (ساخت/امضا/ایستا) / اجرا روی دستگاه NOT RUN |
 | نسخه‌ی تک‌فایل ویندوزی/لینوکسی | `scripts/build-exe.mjs` | اجرای باینری لینوکسی (`--plan`/`--server`) و ورود واقعی با `123456` | PASS (لینوکس) / ویندوز NOT RUN |
 | HTML تک‌فایل (باز شدن با file://) | `apps/web/src/pages/StandaloneGuide.tsx`, `apps/web/src/main.tsx` | `StandaloneGuide.test.tsx` (۳) + E2E مرورگر واقعی | PASS |
 | سرو رابط کاربری و مسیرهای SPA (رفرش روی /login، /attendance) | `apps/api/src/app.ts` (resolver مسیر + `/*`) | `test/web-static.test.ts` (۴) | PASS |
@@ -68,7 +69,9 @@
 | ساخت دارایی‌ها (EXE/Linux/HTML) | PASS | ساخته و هش شدند؛ `artifacts/BUILD.md` |
 | دانلود مستقیم دارایی‌ها از مخزن | **PASS** | `artifacts/payesh2-standalone-html.zip`، `artifacts/payesh2-win-x64.zip`، `artifacts/payesh2-standalone.html` با لینک `raw` (هش‌ها در `artifacts/BUILD.md`) |
 | آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط پاسخ نمی‌دهد (بررسی `curl` → 000) |
-| APK اندروید | **BLOCKED** | بازبینی ۲۰۲۶-۱۰-۲۳: `java`/`javac`/`sdkmanager` نصب نیستند، `dl.google.com` و `uploads.github.com` از این محیط پاسخ نمی‌دهند (`curl` → 000)؛ ساخت یا دانلود APK ممکن نیست |
+| APK اندروید (ساخت، امضا، بازبینی ایستا) | **PASS** | `artifacts/payesh2-android.apk` — ۱۴۴٬۶۸۶ بایت، sha256 `83e73f12…e487`، امضای v2+v3، بازبینی ایستا ۱۹/۱۹؛ ساخته‌شده در [اجرای CI 40035040606](https://github.com/rezaa2544/p3/actions/runs/40035040606) |
+| نصب و اجرای APK روی دستگاه/شبیه‌ساز | **NOT RUN** | نه دستگاه اندروید و نه AVD در محیط ساخت نبود؛ `adb` هم در دسترس نیست — `docs/testing/07-android.md` |
+| انتشار APK در Google Play | **BLOCKED** | نیاز به حساب توسعه‌دهنده/بازبینی گوگل؛ برای پایلوت مدرسه لازم نیست |
 | نصب‌کننده‌ی (installer) ویندوز | **PASS (بدون نصب‌کنندهٔ سوم)** | همان `Payesh2.exe` خودش را per-user نصب می‌کند: کپی به `%LOCALAPPDATA%\Programs\Payesh2`، سه میان‌بر، کلید `HKCU\…\Uninstall\Payesh2`، حذف با `--uninstall` — ADR 0005. NSIS/WiX همچنان در دسترس نیست و لازم هم نیست |
 | اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
 
@@ -94,9 +97,10 @@
 1. هیچ استقرار اینترنتی با TLS و دامنه انجام نشده (BLOCKED).
 2. اجرای فایل اجرایی روی ویندوز واقعی انجام نشده (NOT RUN)؛ فقط بازبینی ایستای PE و اجرای
    همان کد به‌صورت بسته‌بندی‌شده روی لینوکس انجام شده است.
-3. APK اندروید ارائه نشده (BLOCKED — بدون Android SDK/JDK)؛ «نصب‌کنندهٔ» ویندوز به‌شکل
-   بستهٔ سوم وجود ندارد، چون خودِ `Payesh2.exe` نصب‌کننده است (per-user، بدون UAC). اجرای این
-   نصب روی ویندوز واقعی همچنان NOT RUN است.
+3. APK اندروید **ساخته و امضا شد** و بازبینی ایستای آن ۱۹/۱۹ PASS است، اما روی هیچ گوشی یا
+   شبیه‌سازی اجرا نشده (NOT RUN) و کلید امضایش «پایلوت» است (نصب نسخهٔ تازه نیازمند حذف
+   نسخهٔ قبلی). «نصب‌کنندهٔ» ویندوز به‌شکل بستهٔ سوم وجود ندارد، چون خودِ `Payesh2.exe`
+   نصب‌کننده است (per-user، بدون UAC)؛ اجرای این نصب روی ویندوز واقعی همچنان NOT RUN است.
 
 پیش‌شرط‌های پایلوت محدود: استفاده‌ی داخلی در یک مدرسه، با پشتیبان روزانه‌ی آزمون‌شده،
 دسترسی از طریق شبکه‌ی محلی یا VPN، و پذیرش این نکته که داده‌ی دانش‌آموز روی یک رایانه
@@ -113,8 +117,10 @@
 | گزارش خام آزمون بار | `docs/testing/load-report-2026-10-23.json` |
 | گزارش E2E جریان‌های محصول | `docs/testing/product-e2e.json` (۲۳/۲۳ PASS) |
 | گزارش E2E نسخه‌ی تک‌فایل | `docs/testing/standalone-e2e.json` (۷/۷ PASS) |
+| APK اندروید | `artifacts/payesh2-android.apk` + `artifacts/payesh2-android.json` (**ساخت/امضا/بازبینی ایستا PASS ۱۹/۱۹**؛ نصب روی دستگاه NOT RUN) |
 | بازبینی ایستای EXE ویندوز | `artifacts/payesh2-win-static.json` (**۱۳/۱۳ PASS** — زیرسیستم GUI، آیکون، نسخه؛ اجرا NOT RUN) |
 | آزمون میزکار (مرورگر واقعی) | `docs/testing/desktop-e2e.json` — آخرین اجرای محلی NOT RUN؛ اجرا در کار CI «نسخه میزکار» |
+| ADR راهبرد APK اندروید | `docs/decisions/0006-android-apk-strategy.md` |
 | ADR نصب میزکار و اعتبارنامهٔ نخستین ورود | `docs/decisions/0005-desktop-install-and-bootstrap-credentials.md` |
 | آزمون بار روی PostgreSQL واقعی | `docs/testing/load-report-real-pg-2026-10-23.json` |
 | بازیابی از پشتیبان | `docs/testing/04-real-postgres-restore.md` |

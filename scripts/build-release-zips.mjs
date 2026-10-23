@@ -7,6 +7,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { copyFile, mkdir, readFile, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -53,10 +54,13 @@ try {
 
 const sha = async (f) => createHash('sha256').update(await readFile(f)).digest('hex');
 const out = {};
+const apk = path.join(artifacts, 'payesh2-android.apk');
+const withApk = existsSync(apk);
 for (const [key, file] of [
   ['standaloneHtmlZip', htmlZip],
   ['standaloneHtml', html],
   ...(winZip ? [['winZip', winZip]] : []),
+  ...(withApk ? [['androidApk', apk]] : []),
 ]) {
   const st = await stat(file);
   out[key] = { file: path.basename(file), bytes: st.size, sha256: await sha(file) };

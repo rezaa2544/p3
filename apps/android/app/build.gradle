@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ir.payesh2.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'ir.payesh2.app'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '0.1.0'
+        resConfigs 'fa', 'en'
+    }
+
+    buildTypes {
+        release {
+            // بدون signingConfig: خروجی unsigned است و در CI با apksigner امضا می‌شود
+            // (کلید پایلوت، چرخهٔ کامل در docs/testing/07-android.md توضیح داده شده است)
+            minifyEnabled false
+            shrinkResources false
+        }
+        debug {
+            applicationIdSuffix '.debug'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError true
+        warningsAsErrors false
+    }
+}
+
+// هیچ وابستگی خارجی ندارد: فقط چارچوب اندروید (WebView، Activity) استفاده می‌شود.
+dependencies {}

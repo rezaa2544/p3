@@ -13,5 +13,10 @@
     "file": "payesh2-win-x64.zip",
     "bytes": 45824941,
     "sha256": "667eaaf47e42d5514225383e40d8dc8eb2eb4ebc6bcf0ffd70a3174703c2625f"
+  },
+  "androidApk": {
+    "file": "payesh2-android.apk",
+    "bytes": 144686,
+    "sha256": "83e73f12b94492dae8d18c4341608a6c4239237b7c6bf063553457e4d135e487"
   }
 }

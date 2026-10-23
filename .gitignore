@@ -15,6 +15,11 @@ artifacts/*
 !artifacts/payesh2-win-static.json
 # آیکون برنامه: ورودی ساخت است (در منابع PE جاسازی می‌شود)، نه خروجی
 !artifacts/payesh2.ico
+# APK اندروید (ساختهٔ CI) و فراداده‌اش
+!artifacts/payesh2-android.apk
+!artifacts/payesh2-android.json
+!artifacts/payesh2-android-verify.txt
+!artifacts/payesh2-android-badging.txt
 *.log
 .env
 .env.*
@@ -25,6 +30,12 @@ coverage/
 apps/web/dist/
 apps/api/dist/
 apps/api/.pglite/
+# خروجی‌های ساخت اندروید
+apps/android/.gradle/
+apps/android/build/
+apps/android/app/build/
+apps/android/local.properties
+apps/android/.kotlin/
 desktop/release/
 *.tsbuildinfo
 apps/web/dist-standalone/
