@@ -1,0 +1,37 @@
+{
+  "name": "payesh2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "پایش ۲ — سامانه مدیریت هوشمند مدرسه",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=22.11.0"
+  },
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev:api & npm run dev:web",
+    "dev:api": "npm --workspace apps/api run dev",
+    "dev:web": "npm --workspace apps/web run dev",
+    "db:migrate": "npm --workspace apps/api run db:migrate",
+    "db:seed": "npm --workspace apps/api run db:seed",
+    "build": "npm --workspace apps/web run build && npm --workspace apps/api run build",
+    "start": "npm --workspace apps/api run start",
+    "lint": "eslint .",
+    "typecheck": "npm --workspace apps/api run typecheck && npm --workspace apps/web run typecheck",
+    "test": "npm --workspace apps/api run test && npm --workspace apps/web run test",
+    "test:api": "npm --workspace apps/api run test",
+    "test:web": "npm --workspace apps/web run test",
+    "test:load": "npm --workspace apps/api run test:load",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4"
+  }
+}
