@@ -14,7 +14,7 @@
 ## ۲. نتیجه‌ی اجرا (۲۰۲۶-۱۰-۲۳)
 
 ```
-apps/api  →  Test Files 13 passed | Tests 96 passed   (vitest run)
+apps/api  →  Test Files 14 passed | Tests 102 passed   (vitest run)
 apps/web  →  Test Files  4 passed | Tests 33 passed   (vitest run)
 eslint    →  0 error
 tsc       →  بدون خطا (apps/api و apps/web)
@@ -22,7 +22,7 @@ npm audit --omit=dev → 0 vulnerabilities
 ```
 
 تفکیک فایل‌های API: auth 11، access 13، attendance 15، grades 9، security 9، backup 5،
-units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-static 4 (مجموع ۹۶).
+units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-static 4، validation-i18n 6 (مجموع ۱۰۲).
 
 آزمون‌های شاخصی که «ادعا» را پشتیبانی می‌کنند:
 

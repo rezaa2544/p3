@@ -8,7 +8,7 @@
 - API با Fastify 5 + TypeScript + SQL خام و RLS
 - ۹ نقش سازمانی: مدیر مجموعه، مدیر مدرسه، معاون، مسئول فناوری، دبیر، مشاور، مالی،
   دانش‌آموز، والد
-- آزمون‌ها: **۹۶ آزمون API**، **۳۳ آزمون رابط** و **۳۰ بررسی E2E در مرورگر واقعی**
+- آزمون‌ها: **۱۰۲ آزمون API**، **۳۳ آزمون رابط** و **۳۰ بررسی E2E در مرورگر واقعی**
   (۷ تک‌فایل + ۲۳ جریان محصول، شامل قطع واقعی شبکه) — همه روی **PostgreSQL 16.2** هم اجرا
   شدند: [`docs/testing/01-strategy.md`](docs/testing/01-strategy.md)
 - داوری شواهد: **READY FOR LIMITED PILOT** — جزئیات و محدودیت‌ها در
@@ -36,7 +36,7 @@
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
-payesh2-win-x64.zip          f90196db50686c7a535fb3ddfe13f0ad691c32d395bf0c9cf6c47984b7f24f1a
+payesh2-win-x64.zip          3b6bb4fee3f56641da00279f80d211ffe3c22399d652cbdaf4ca0ca87a785359
 payesh2-standalone-html.zip  fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af
 payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c
 ```
@@ -158,7 +158,7 @@ scrypt برای رمز، کوکی نشست `HttpOnly`/`SameSite`، CSRF اجبا
 
 ```bash
 npm run typecheck && npm run lint
-npm run test:api              # ۹۶ تست API (PGlite واقعی)
+npm run test:api              # ۱۰۲ تست API (PGlite واقعی)
 npm run test:web              # ۳۳ تست رابط
 npm run build
 

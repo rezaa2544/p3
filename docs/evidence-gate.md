@@ -13,6 +13,7 @@
 |---|---|---|---|
 | ورود با نام کاربری/رمز و نشست کوکی | `apps/api/src/routes/auth.ts`, `security/session.ts` | `test/auth.test.ts` (۱۱) | PASS |
 | CSRF برای همه‌ی نوشتن‌ها | `apps/api/src/app.ts` → `assertCsrf` | `test/auth.test.ts` | PASS |
+| پیام‌های اعتبارسنجی فارسی (نه انگلیسی) | `apps/api/src/lib/zod-fa.ts` (بستهٔ زبان `fa` در zod 4 + ترجمهٔ نام نوع‌ها) | `test/validation-i18n.test.ts` (۶) | PASS |
 | نقش‌ها و مجوزها (۹ نقش) | `security/rbac.ts` | `test/access.test.ts` (۱۳) | PASS |
 | مرز مدرسه با RLS | `db.ts` → `schoolTx`/`set_config`، `migrations/*` | `test/access.test.ts` → «عبور از مرز مدرسه مسدود است» | PASS |
 | ثبت حضور گروهی | `routes/attendance.ts` | `test/attendance.test.ts` (۱۵) + E2E مرورگر واقعی | PASS |
@@ -36,11 +37,12 @@
 
 | ادعا | شاهد | وضعیت |
 |---|---|---|
-| آزمون API | `vitest run` → **۱۳ فایل، ۹۶ تست، ۰ خطا** | PASS |
+| آزمون API | `vitest run` → **۱۴ فایل، ۱۰۲ تست، ۰ خطا** | PASS |
 | آزمون وب | `vitest run` → **۴ فایل، ۳۳ تست، ۰ خطا** (شامل تست پایداری فوکوس مودال) | PASS |
 | typecheck هر دو بسته | `npm run typecheck` بدون خطا | PASS |
 | lint | `eslint .` بدون خطا | PASS |
-| وابستگی‌های تولید بدون آسیب‌شناسی شناخته‌شده | `npm audit --omit=dev` → 0 | PASS (در تاریخ ساخت) |
+| وابستگی‌های تولید بدون آسیب‌شناسی شناخته‌شده | `npm audit --omit=dev --audit-level=high` → **found 0 vulnerabilities**، کد خروج ۰ (پس از مهاجرت zod 4 – ADR 0004) | PASS |
+| رفع CVE-2023-54404 (zod) | `zod@^4.6.7` در `apps/api/package.json` + تست `validation-i18n.test.ts` که نسخهٔ ≥۴.۶.۶ را تثبیت می‌کند | PASS |
 | آزمون مرورگری E2E (نسخه‌ی HTML تک‌فایل) | Chromium headless ۱۳۱، ۷/۷ PASS — `docs/testing/standalone-e2e.json` | PASS |
 | آزمون مرورگری E2E (کل جریان‌های محصول: حضور، اصلاح، نمره، کارنامه/PDF، تکلیف، اطلاعیه، RBAC، آفلاین، PWA) | Chromium ۱۳۱ → **۲۳/۲۳ PASS** — `docs/testing/product-e2e.json`، `docs/testing/03-product-e2e.md` | PASS |
 | قطع واقعی شبکه و همگام‌سازی idempotent در مرورگر | CDP `setOfflineMode` → صف محلی → بازگشت شبکه → «تأیید سرور»؛ سرور رکورد را `offline` ثبت کرد | PASS |

@@ -1,4 +1,6 @@
 import { z } from 'zod';
+// پیام‌های اعتبارسنجی را فارسی می‌کند (باید پیش از ساخت هر schema ایمپورت شود)
+import './zod-fa.js';
 import { badRequest, AppError } from '../errors.js';
 
 export function parse<S extends z.ZodTypeAny>(schema: S, data: unknown): z.infer<S> {
