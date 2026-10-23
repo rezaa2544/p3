@@ -96,20 +96,31 @@ function listZipEntries(buffer) {
     const nameLen = buffer.readUInt16LE(offset + 28);
     const extraLen = buffer.readUInt16LE(offset + 30);
     const commentLen = buffer.readUInt16LE(offset + 32);
-    names.push(buffer.subarray(offset + 46, offset + 46 + nameLen).toString('utf8'));
+    names.push({
+      name: buffer.subarray(offset + 46, offset + 46 + nameLen).toString('utf8'),
+      uncompressed: buffer.readUInt32LE(offset + 24),
+    });
     offset += 46 + nameLen + extraLen + commentLen;
   }
   return names;
 }
 
 // ۱) ساختار ZIP و اجزای اجباری
-const zipList = listZipEntries(buf);
+const entries = listZipEntries(buf);
+const zipList = entries.map((e) => e.name);
 const has = (re) => zipList.some((n) => re.test(n));
+const entryOf = (name) => entries.find((e) => e.name === name);
 record('بستهٔ ZIP سالم و قابل خواندن است', zipList.length > 5, `${zipList.length} ورودی`);
 record('AndroidManifest.xml دارد', has(/^AndroidManifest\.xml$/), '');
 record('resources.arsc دارد', has(/^resources\.arsc$/), '');
 record('حداقل یک classes.dex دارد', has(/^classes\d*\.dex$/), zipList.filter((n) => n.endsWith('.dex')).join(','));
-record('آیکون برنامه (res/mipmap) دارد', has(/^res\/.*mipmap.*ic_launcher/), '');
+const dexEntry = entryOf('classes.dex');
+record(
+  'classes.dex کد واقعی دارد (بزرگ‌تر از ۲ کیلوبایت)',
+  (dexEntry?.uncompressed ?? 0) > 2048,
+  dexEntry ? `${dexEntry.uncompressed} بایت` : 'classes.dex نیست',
+);
+record('آیکون برنامه در بسته هست', has(/^res\/.*\.(png|webp|xml)$/), '');
 record('امضای v1 (META-INF/*.RSA یا *.SF) دارد', has(/^META-INF\/.*\.(RSA|DSA|EC|SF)$/), '');
 
 // ۲) badging از aapt2
@@ -122,25 +133,52 @@ if (aapt2) {
     aaptErr = String(e.message ?? e).slice(0, 200);
   }
 }
-const field = (name) => (badging.match(new RegExp(`${name}='([^']*)'`)) ?? [])[1] ?? '';
+// قالب badging بین نسخه‌های build-tools کمی تفاوت دارد؛ فاصله بعد از «:» اختیاری است
+const field = (name) => (badging.match(new RegExp(`${name}\\s*:\\s*'([^']*)'`)) ?? [])[1] ?? '';
+
+/**
+ * سطوح SDK هم در badging و هم در درخت XML مانیفست خوانده می‌شوند؛ نسخه‌های مختلف
+ * build-tools قالب badging را کمی تغییر داده‌اند، اما xmltree پایدار است.
+ */
+let xmltree = '';
+if (aapt2) {
+  try {
+    xmltree = execFileSync(aapt2, ['dump', 'xmltree', '--file', 'AndroidManifest.xml', apkPath], {
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+    });
+  } catch {
+    xmltree = '';
+  }
+}
+const xmlSdk = (attr) => {
+  const m = xmltree.match(new RegExp(`android:${attr}\\(0x[0-9a-f]+\\)=\\(type 0x10\\)0x([0-9a-f]+)`));
+  return m ? String(parseInt(m[1], 16)) : '';
+};
 const packageName = field('package: name');
 const versionCode = field('versionCode');
 const versionName = field('versionName');
-const sdkVersion = field('sdkVersion');
-const targetSdk = field('targetSdkVersion');
+const sdkVersion = field('sdkVersion') || field('minSdkVersion') || xmlSdk('minSdkVersion');
+const targetSdk = field('targetSdkVersion') || xmlSdk('targetSdkVersion');
 const label = (badging.match(/application-label(?:-fa)?:'([^']*)'/) ?? [])[1] ?? '';
 
 record('aapt2 بسته را می‌خواند (manifest باینری معتبر)', Boolean(badging), aaptErr || aapt2);
 record('شناسهٔ بسته ir.payesh2.app است', packageName === 'ir.payesh2.app', packageName || '-');
 record('نسخه ثبت شده است', Boolean(versionName) && Boolean(versionCode), `${versionName} (${versionCode})`);
-record('minSdk ≥ ۲۴', Number(sdkVersion) >= 24, `sdkVersion=${sdkVersion}`);
-record('targetSdk = ۳۴', Number(targetSdk) === 34, `targetSdkVersion=${targetSdk}`);
+record('minSdk ≥ ۲۴', Number(sdkVersion) >= 24, `sdkVersion=${sdkVersion || '-'} (xml:${xmlSdk('minSdkVersion') || '-'})`);
+record('targetSdk = ۳۴', Number(targetSdk) === 34, `targetSdkVersion=${targetSdk || '-'} (xml:${xmlSdk('targetSdkVersion') || '-'})`);
 record(
   'اکتیویتی راه‌انداز MainActivity است',
   /launchable-activity: name='ir\.payesh2\.app\.MainActivity'/.test(badging),
   (badging.match(/launchable-activity: name='([^']+)'/) ?? [])[1] ?? '-',
 );
 record('برچسب فارسی برنامه ثبت شده است', label.includes('پایش'), label || '-');
+const badgingIcon = (badging.match(/application:[^\n]*icon='([^']+)'/) ?? [])[1] ?? '';
+record(
+  'آیکون اعلام‌شده در مانیفست داخل بسته وجود دارد',
+  Boolean(badgingIcon) && zipList.includes(badgingIcon),
+  badgingIcon || 'آیکون اعلام نشده',
+);
 record('مجوز اینترنت دارد', /uses-permission: name='android\.permission\.INTERNET'/.test(badging), '');
 
 // ۳) امضا: از خروجی apksigner اگر در دسترس باشد
