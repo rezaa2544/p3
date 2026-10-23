@@ -258,3 +258,32 @@ describe('حضور و غیاب', () => {
     expect(audit[0].n).toBeGreaterThan(0);
   });
 });
+
+describe('رجیستری: ثبت گروهی با یک کلید عملیات', () => {
+  it('یک Idempotency-Key برای چند دانش‌آموز، همه ردیف‌ها را ثبت می‌کند', async () => {
+    const admin = await env.login('adminA');
+    // دو دانش‌آموز در یک کلاس برای سنجش ثبت گروهی
+    const created = await env.request('POST', '/api/students', {
+      auth: admin,
+      body: { firstName: 'گروهی', lastName: 'آزمون', classId: env.fx.classA1 },
+    });
+    expect(created.status).toBe(200);
+    const res = await env.request('POST', '/api/attendance', {
+      auth: admin,
+      headers: { 'idempotency-key': `batch-${Date.now()}` },
+      body: {
+        classId: env.fx.classA1,
+        day: '2026-01-05',
+        periodNo: 1,
+        records: [
+          { studentId: env.fx.student1, status: 'present' },
+          { studentId: created.json.id, status: 'absent' },
+        ],
+      },
+    });
+    expect(res.status).toBe(201);
+    expect(res.json.saved).toBe(2);
+    const rows = await env.dbQuery("select count(*)::int as n from attendance_records where day = '2026-01-05'");
+    expect(rows[0].n).toBe(2);
+  });
+});

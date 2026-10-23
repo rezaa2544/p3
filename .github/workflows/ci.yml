@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: typecheck · lint · test · build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: نصب وابستگی‌ها از lockfile
+        run: npm ci
+      - name: بررسی نوع‌ها
+        run: npm run typecheck
+      - name: لینت
+        run: npm run lint
+      - name: تست API (PostgreSQL واقعی از طریق PGlite)
+        run: npm run test:api
+      - name: تست رابط کاربری
+        run: npm run test:web
+      - name: ساخت نسخه قابل توزیع
+        run: npm run build
+      - name: آپلود گزارش تست
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            apps/web/dist
+            apps/api/dist
+          retention-days: 7
+
+  security:
+    name: بررسی امنیت وابستگی‌ها
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - name: audit وابستگی‌های تولیدی (باید صفر باشد)
+        run: npm audit --omit=dev --audit-level=high
+      - name: لیست وابستگی‌های تولیدی
+        run: npm ls --omit=dev --all > dependencies.txt || true

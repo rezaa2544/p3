@@ -19,7 +19,9 @@ create table attendance_records (
   updated_at timestamptz not null default now(),
   unique (student_id, day, period_no)
 );
-create unique index attendance_client_op on attendance_records(client_op_id) where client_op_id is not null;
+-- یک کلید عملیات (Idempotency-Key) برای یک دسته ثبت گروهی استفاده می‌شود؛
+-- بنابراین یکتایی باید ترکیبی با دانش‌آموز باشد، نه روی خود کلید.
+create unique index attendance_client_op on attendance_records(client_op_id, student_id) where client_op_id is not null;
 create index attendance_class_day on attendance_records(class_id, day, period_no);
 create index attendance_school_day on attendance_records(school_id, day);
 create index attendance_student_day on attendance_records(student_id, day desc);
