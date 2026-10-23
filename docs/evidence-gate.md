@@ -48,7 +48,8 @@
 | ادعا | وضعیت | توضیح |
 |---|---|---|
 | آدرس HTTPS عمومی محصول | **BLOCKED** | هیچ میزبان/دامنه‌ای در اختیار نبود؛ ارائه‌ی URL ساختگی ممنوع |
-| دارایی‌های GitHub Release | PASS (پس از ایجاد release) | فایل‌ها ساخته و هش شدند؛ لینک در `docs/releases/v0.1.0.md` |
+| ساخت دارایی‌ها (EXE/Linux/HTML) | PASS | ساخته و هش شدند؛ `artifacts/BUILD.md` |
+| آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط در دسترس نیست؛ HTML در مخزن قرار گرفت و باینری‌ها با `npm run artifact:exe` بازتولید می‌شوند |
 | APK اندروید | **BLOCKED** | بدون Android SDK/JDK و بدون دسترسی به دانلود آن‌ها |
 | نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | نیازمند NSIS/WiX + امضا؛ نسخه‌ی تک‌فایل جایگزین شد |
 | اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
