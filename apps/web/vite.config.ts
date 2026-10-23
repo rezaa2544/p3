@@ -1,10 +1,20 @@
+import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
+/**
+ * mode = 'standalone' → خروجی تک‌فایل HTML (بدون Service Worker و بدون chunk جدا).
+ * برای artifact مستقل استفاده می‌شود؛ ساخت پیش‌فرض PWA دست‌نخورده می‌ماند.
+ */
+export default defineConfig(({ mode }) => {
+  const standalone = mode === 'standalone';
+  return {
   plugins: [
     react(),
+    ...(standalone
+      ? []
+      : [
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
@@ -46,7 +56,11 @@ export default defineConfig({
       },
       devOptions: { enabled: false },
     }),
+        ]),
   ],
+  resolve: standalone
+    ? { alias: { 'virtual:pwa-register': path.resolve(import.meta.dirname, 'src/lib/pwa-register-standalone.ts') } }
+    : {},
   server: {
     host: '0.0.0.0',
     port: 5173,
@@ -56,5 +70,14 @@ export default defineConfig({
     },
   },
   preview: { host: '0.0.0.0', port: 4173, allowedHosts: true },
-  build: { outDir: 'dist', sourcemap: false, target: 'es2022' },
+  build: {
+    outDir: standalone ? 'dist-standalone' : 'dist',
+    sourcemap: false,
+    target: 'es2022',
+    cssCodeSplit: !standalone,
+    ...(standalone
+      ? { rollupOptions: { output: { inlineDynamicImports: true, entryFileNames: 'app.js', assetFileNames: 'app.[ext]' } } }
+      : {}),
+  },
+  };
 });

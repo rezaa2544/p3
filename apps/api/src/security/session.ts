@@ -6,7 +6,7 @@ import { AppError, badRequest, unauthorized } from '../errors.js';
 import { permissionsFor, ROLE_PERMISSIONS, type Role } from './rbac.js';
 import { hashToken, newToken } from './password.js';
 
-export const SESSION_COOKIE = 'p2_sid';
+export const SESSION_COOKIE = 'payesh2_sid';
 
 export function cookieOptions(): CookieSerializeOptions {
   const cfg = config();
