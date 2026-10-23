@@ -8,6 +8,9 @@ artifacts/*
 !artifacts/payesh2-win-x64.json
 !artifacts/payesh2-linux-x64.json
 !artifacts/BUILD.md
+!artifacts/payesh2-standalone-html.zip
+# باینری ویندوز به‌صورت ZIP (<۱۰۰MB) برای دانلود مستقیم؛ exe خام در گیت نمی‌آید
+!artifacts/payesh2-win-x64.zip
 *.log
 .env
 .env.*

@@ -17,27 +17,38 @@
 
 ## دریافت و اجرای پایش ۲
 
-> نسخه: **v0.1.0** (۲۰۲۶-۱۰-۲۳) — [صفحه‌ی انتشار](https://github.com/rezaa2544/p3/releases/tag/v0.1.0).
-> آپلود دارایی در GitHub Release از محیط ساخت ممکن نشد (`uploads.github.com` در دسترس نبود)؛
-> بنابراین HTML در مخزن است و باینری‌ها با یک دستور بازتولید می‌شوند. هیچ لینک دانلود
-> ساختگی ارائه نمی‌شود.
+> نسخه: **v0.1.0** (۲۰۲۶-۱۰-۲۳) · [صفحه‌ی انتشار](https://github.com/rezaa2544/p3/releases/tag/v0.1.0)
+>
+> لینک‌های زیر **مستقیم** هستند: با کلیک، دانلود همان لحظه شروع می‌شود
+> (مسیر `raw` گیت‌هاب؛ برای باینری، ZIP استفاده شده تا حجم زیر حد مجاز مخزن بماند).
 
-| قالب | لینک | وضعیت |
-|---|---|---|
-| **HTML تک‌فایل** | [`artifacts/payesh2-standalone.html`](artifacts/payesh2-standalone.html) | در مخزن موجود است (۳۷۷KB، صفر ارجاع بیرونی، در jsdom رندر شد). برای دانلود، دکمه‌ی *Download* در صفحه‌ی گیت‌هاب |
-| **ویندوز (EXE، بدون نصب)** | — | **ساخته شد، توزیع BLOCKED** — میزبان آپلود دارایی‌های GitHub (`uploads.github.com`) از محیط ساخت در دسترس نبود؛ راه بازتولید در پایین |
-| **نسخه‌ی لینوکس (همان بسته)** | — | ساخته و کامل آزموده شد (ورود، مدرسه، ترم، ساخت کلاس/دانش‌آموز)؛ توزیع BLOCKED (همان دلیل) |
-| **اپلیکیشن اندروید (APK)** | — | **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
-| **آدرس HTTPS عمومی** | — | **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
-| **نصب‌کننده‌ی ویندوز (Setup)** | — | **NOT BUILT** — نسخه‌ی تک‌فایل جایگزین شد |
+| قالب | لینک دانلود مستقیم | حجم | وضعیت |
+|---|---|---|---|
+| **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۳ KB | ✅ ساخته و بازبینی شد (ZIP شامل HTML + راهنما) |
+| **ویندوز x64 (EXE در ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ ساخته شد؛ اجرا روی ویندوز واقعی هنوز آزموده نشده (NOT RUN) |
+| HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۷۷ KB | ✅ صفر ارجاع بیرونی، رندر در jsdom تأیید شد |
+| اپلیکیشن اندروید (APK) | — | — | ⛔ **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
+| آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
+| نصب‌کننده‌ی ویندوز (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — نسخه‌ی تک‌فایل جایگزین شد |
+| نسخه‌ی لینوکس x64 | [ساخت محلی](artifacts/BUILD.md) | ۱۶۲ MB | ✅ ساخته و کامل آزموده شد؛ به‌دلیل حجم در گیت نیست |
 
-هش و اندازه‌ی فایل‌های ساخته‌شده در [`artifacts/BUILD.md`](artifacts/BUILD.md) ثبت شده است.
+هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
+
+```text
+payesh2-win-x64.zip          baaf83f8fe27fae7a876c24bc09fdda9b78de5f7774902867330ca237a82dcac
+payesh2-standalone-html.zip  461404467c429b9d39997baee0cc39d911c7a8fef3966af9cde795291180734e
+payesh2-standalone.html      3672f2a36b76090030686e95cc6a795d8bfa13a9046fb36092080536097f3f79
+```
+
+> چرا ZIP و نه EXE خام؟ حد مجاز هر فایل در گیت‌هاب ۱۰۰MB است و EXE خام ۱۱۹MB است؛ ZIP آن
+> ۴۴MB می‌شود. آپلود در بخش Releases همچنان BLOCKED است (میزبان `uploads.github.com` از محیط
+> ساخت در دسترس نیست)؛ به‌جای لینک ساختگی، فایل در مخزن و با لینک `raw` منتشر شده است.
 
 ### ۱) ویندوز: اجرای فوری
 
-1. فایل اجرایی را بسازید: `npm ci && npm run build && npm run artifact:exe` → `artifacts/payesh2.exe`
-   (اگر دارایی در Release آپلود شده بود، از همان صفحه دریافت کنید).
-   سپس آن را در یک پوشه‌ی دلخواه اجرا کنید (نصب لازم نیست؛ Node هم لازم نیست).
+1. فایل [`payesh2-win-x64.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)
+   را دانلود و باز کنید و `payesh2.exe` را در یک پوشه‌ی دلخواه اجرا کنید
+   (نصب لازم نیست؛ Node هم لازم نیست). ساخت محلی: `npm ci && npm run build && npm run artifact:exe`
 2. پنجره‌ی کنسول آدرس `http://localhost:3000` و **رمز موقت مدیر** را یک‌بار چاپ می‌کند؛
    آن را یادداشت کنید.
 3. مرورگر را باز کنید → `http://localhost:3000` → با نام کاربری `admin` و همان رمز وارد شوید.
@@ -84,7 +95,8 @@ npm run dev                      # API: 3000 ، وب: 5173
 
 ### ۴) HTML تک‌فایل
 
-`payesh2-standalone.html` یک فایل خودبسنده است (بدون هیچ فایل جانبی) اما برای کار کردن به
+[`payesh2-standalone-html.zip`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)
+را دانلود و باز کنید. `payesh2-standalone.html` یک فایل خودبسنده است (بدون هیچ فایل جانبی) اما برای کار کردن به
 API پایش ۲ در **همان مبدأ** نیاز دارد؛ بنابراین آن را از خود سرور پایش ۲ باز کنید یا آن را
 روی میزبانی قرار دهید که `/api` را به سرور پایش ۲ پروکسی می‌کند. باز کردن مستقیم با
 `file://` فقط صفحه‌ی ورود را نشان می‌دهد (بدون API).

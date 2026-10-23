@@ -49,7 +49,8 @@
 |---|---|---|
 | آدرس HTTPS عمومی محصول | **BLOCKED** | هیچ میزبان/دامنه‌ای در اختیار نبود؛ ارائه‌ی URL ساختگی ممنوع |
 | ساخت دارایی‌ها (EXE/Linux/HTML) | PASS | ساخته و هش شدند؛ `artifacts/BUILD.md` |
-| آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط در دسترس نیست؛ HTML در مخزن قرار گرفت و باینری‌ها با `npm run artifact:exe` بازتولید می‌شوند |
+| دانلود مستقیم دارایی‌ها از مخزن | **PASS** | `artifacts/payesh2-standalone-html.zip`، `artifacts/payesh2-win-x64.zip`، `artifacts/payesh2-standalone.html` با لینک `raw` (هش‌ها در `artifacts/BUILD.md`) |
+| آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط پاسخ نمی‌دهد (بررسی `curl` → 000) |
 | APK اندروید | **BLOCKED** | بدون Android SDK/JDK و بدون دسترسی به دانلود آن‌ها |
 | نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | نیازمند NSIS/WiX + امضا؛ نسخه‌ی تک‌فایل جایگزین شد |
 | اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
