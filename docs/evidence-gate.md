@@ -28,7 +28,11 @@
 | پشتیبان/بازیابی با checksum | `services/backup.ts`, `scripts/{backup,restore}.ts` | `test/backup.test.ts` (۵), `test/migration.test.ts` (۴) | PASS |
 | مهاجرت با checksum | `db.ts` → `migrate` | `test/migration.test.ts` | PASS |
 | راه‌اندازی اولیه بدون رمز پیش‌فرض | `services/first-run.ts` | `test/first-run.test.ts` (۳) | PASS |
-| نسخه‌ی تک‌فایل ویندوزی/لینوکسی | `scripts/build-exe.mjs` | اجرای باینری لینوکسی و ورود واقعی | PASS (لینوکس) / ویندوز NOT RUN |
+| نسخه‌ی میزکار ویندوز (نصب per-user، میان‌بر، رجیستری، بدون UAC) | `apps/api/src/desktop/{install-plan,installer,shell-plan,cli}.ts` | `test/install-plan.test.ts` (۱۲) + `test/desktop-installer.test.ts` (۱۱) + اجرای `--plan` روی باینری ساخته‌شده | PASS (منطق) / اجرای روی ویندوز NOT RUN |
+| فایل اجرایی ویندوز بدون پنجرهٔ کنسول | `scripts/lib/pe.mjs` (تغییر زیرسیستم PE) + `scripts/build-exe.mjs` | `npm run verify:win` → زیرسیستم `GUI`، ۱۳/۱۳ PASS — `artifacts/payesh2-win-static.json` | PASS (ایستا) |
+| آیکون و اطلاعات نسخهٔ برنامه در ویندوز | `scripts/lib/pe.mjs` (`resedit`)، `artifacts/payesh2.ico` | `verify:win` → «آیکون جاسازی‌شده» و «اطلاعات نسخه» | PASS (ایستا) |
+| اعتبارنامهٔ نخستین ورود میزکار (۱۲۳۴۵۶/۱۲۳۴۵۶) + تغییر رمز اجباری | `services/first-run.ts` (پرچم صریح)، `desktop/shell-plan.ts`، ADR 0005 | `test/desktop-bootstrap.test.ts` (۴) — رد رمز کوتاه بدون پرچم، ساخت با پرچم، رد رمز کوتاه در تغییر رمز، از کار افتادن رمز قدیمی | PASS |
+| نسخه‌ی تک‌فایل ویندوزی/لینوکسی | `scripts/build-exe.mjs` | اجرای باینری لینوکسی (`--plan`/`--server`) و ورود واقعی با `123456` | PASS (لینوکس) / ویندوز NOT RUN |
 | HTML تک‌فایل (باز شدن با file://) | `apps/web/src/pages/StandaloneGuide.tsx`, `apps/web/src/main.tsx` | `StandaloneGuide.test.tsx` (۳) + E2E مرورگر واقعی | PASS |
 | سرو رابط کاربری و مسیرهای SPA (رفرش روی /login، /attendance) | `apps/api/src/app.ts` (resolver مسیر + `/*`) | `test/web-static.test.ts` (۴) | PASS |
 | HTML تک‌فایل (سرو از سرور و ورود کامل) | `apps/api/src/app.ts` → `/standalone.html` | `standalone.test.ts` (۳) + E2E مرورگر واقعی (۷/۷) | PASS |
@@ -37,7 +41,7 @@
 
 | ادعا | شاهد | وضعیت |
 |---|---|---|
-| آزمون API | `vitest run` → **۱۴ فایل، ۱۰۲ تست، ۰ خطا** | PASS |
+| آزمون API | `vitest run` → **۱۷ فایل، ۱۳۰ تست، ۰ خطا** (شامل ۳ فایل تازه‌ی میزکار) | PASS |
 | آزمون وب | `vitest run` → **۴ فایل، ۳۳ تست، ۰ خطا** (شامل تست پایداری فوکوس مودال) | PASS |
 | typecheck هر دو بسته | `npm run typecheck` بدون خطا | PASS |
 | lint | `eslint .` بدون خطا | PASS |
@@ -47,7 +51,9 @@
 | آزمون مرورگری E2E (کل جریان‌های محصول: حضور، اصلاح، نمره، کارنامه/PDF، تکلیف، اطلاعیه، RBAC، آفلاین، PWA) | Chromium ۱۳۱ → **۲۳/۲۳ PASS** — `docs/testing/product-e2e.json`، `docs/testing/03-product-e2e.md` | PASS |
 | قطع واقعی شبکه و همگام‌سازی idempotent در مرورگر | CDP `setOfflineMode` → صف محلی → بازگشت شبکه → «تأیید سرور»؛ سرور رکورد را `offline` ثبت کرد | PASS |
 | PWA: بارگذاری پوسته در حالت آفلاین | سرویس‌ورکر فعال + reload آفلاین موفق — `product-pwa-offline.png` | PASS |
-| بازبینی ایستای فایل اجرایی ویندوز | `npm run verify:win` → ۷/۷ (PE32+ x64، SEA شامل HTML) — `artifacts/payesh2-win-static.json` | PASS |
+| بازبینی ایستای فایل اجرایی ویندوز | `npm run verify:win` → **۱۳/۱۳** (PE32+ x64، **زیرسیستم GUI**، آیکون، نسخه، دارایی‌های SEA) — `artifacts/payesh2-win-static.json` | PASS |
+| آزمون مرورگری نسخهٔ میزکار (ورود ۱۲۳۴۵۶، کوکی Secure روی 127.0.0.1، بنر تغییر رمز، PWA، تغییر رمز) | `scripts/e2e-desktop.mjs` روی فایل اجرایی ساخته‌شده → **۱۲/۱۲ PASS** در [اجرای 40031051332](https://github.com/rezaa2544/p3/actions/runs/40031051332) — `docs/testing/desktop-e2e.json` | PASS (CI) / اجرای محلی NOT RUN (بدون کتابخانه‌های Chromium) |
+| زنجیرهٔ کامل CI میزکار (ساخت PE، زیرسیستم GUI، اجرای باینری، آزمون مرورگری) | `.github/workflows/ci.yml` → کار «نسخه میزکار (PE ویندوز + آزمون واقعی)»، ۱m۳۱s | PASS |
 | اجرای ویندوزی روی ویندوز واقعی | باینری ساخته شد، اجرا ممکن نبود | NOT RUN |
 | اجرای بسته‌بندی‌شده (همان کد ویندوز) روی لینوکس | `artifacts/payesh2` → health ok، `/standalone.html` ۲۰۰، راه‌اندازی اولیه با رمز تصادفی، ورود موفق، صفر خطای کنسول | PASS (لینوکس) |
 | آزمون بار | `docs/testing/load-report-real-pg-2026-10-23.json` — PostgreSQL 16.2، ۵ سناریو، ۰ خطا/۰ non-2xx | PASS (روی PostgreSQL واقعی، یک ماشین) |
@@ -63,7 +69,7 @@
 | دانلود مستقیم دارایی‌ها از مخزن | **PASS** | `artifacts/payesh2-standalone-html.zip`، `artifacts/payesh2-win-x64.zip`، `artifacts/payesh2-standalone.html` با لینک `raw` (هش‌ها در `artifacts/BUILD.md`) |
 | آپلود دارایی در GitHub Release | **BLOCKED** | میزبان `uploads.github.com` از این محیط پاسخ نمی‌دهد (بررسی `curl` → 000) |
 | APK اندروید | **BLOCKED** | بازبینی ۲۰۲۶-۱۰-۲۳: `java`/`javac`/`sdkmanager` نصب نیستند، `dl.google.com` و `uploads.github.com` از این محیط پاسخ نمی‌دهند (`curl` → 000)؛ ساخت یا دانلود APK ممکن نیست |
-| نصب‌کننده‌ی (installer) ویندوز | **NOT BUILT** | بازبینی ۲۰۲۶-۱۰-۲۳: NSIS/WiX نصب نیست، مخزن بسته‌ی سیستم (`deb.debian.org`) و PyPI بسته‌ی `nsis` را عرضه نمی‌کنند؛ نسخه‌ی تک‌فایل بدون نصب جایگزین شد |
+| نصب‌کننده‌ی (installer) ویندوز | **PASS (بدون نصب‌کنندهٔ سوم)** | همان `Payesh2.exe` خودش را per-user نصب می‌کند: کپی به `%LOCALAPPDATA%\Programs\Payesh2`، سه میان‌بر، کلید `HKCU\…\Uninstall\Payesh2`، حذف با `--uninstall` — ADR 0005. NSIS/WiX همچنان در دسترس نیست و لازم هم نیست |
 | اجرای CI | **PASS** | GitHub Actions، workflow «CI»، اجرای [39992723557](https://github.com/rezaa2544/p3/actions/runs/39992723557): هر دو کار (typecheck/lint/test/build و audit وابستگی تولیدی) سبز. اجرای قبلی به‌دلیل خطای lint روی خروجی ساخت (dist-standalone) شکست خورد و با اصلاح پیکربندی eslint رفع شد |
 
 ## ۴. باگ واقعی کشف‌شده و رفع‌شده (نمونه‌ی صداقت شواهد)
@@ -88,7 +94,9 @@
 1. هیچ استقرار اینترنتی با TLS و دامنه انجام نشده (BLOCKED).
 2. اجرای فایل اجرایی روی ویندوز واقعی انجام نشده (NOT RUN)؛ فقط بازبینی ایستای PE و اجرای
    همان کد به‌صورت بسته‌بندی‌شده روی لینوکس انجام شده است.
-3. APK و installer ویندوز ارائه نشده (BLOCKED / NOT BUILT).
+3. APK اندروید ارائه نشده (BLOCKED — بدون Android SDK/JDK)؛ «نصب‌کنندهٔ» ویندوز به‌شکل
+   بستهٔ سوم وجود ندارد، چون خودِ `Payesh2.exe` نصب‌کننده است (per-user، بدون UAC). اجرای این
+   نصب روی ویندوز واقعی همچنان NOT RUN است.
 
 پیش‌شرط‌های پایلوت محدود: استفاده‌ی داخلی در یک مدرسه، با پشتیبان روزانه‌ی آزمون‌شده،
 دسترسی از طریق شبکه‌ی محلی یا VPN، و پذیرش این نکته که داده‌ی دانش‌آموز روی یک رایانه
@@ -105,10 +113,12 @@
 | گزارش خام آزمون بار | `docs/testing/load-report-2026-10-23.json` |
 | گزارش E2E جریان‌های محصول | `docs/testing/product-e2e.json` (۲۳/۲۳ PASS) |
 | گزارش E2E نسخه‌ی تک‌فایل | `docs/testing/standalone-e2e.json` (۷/۷ PASS) |
-| بازبینی ایستای EXE ویندوز | `artifacts/payesh2-win-static.json` (۷/۷ PASS، اجرا NOT RUN) |
+| بازبینی ایستای EXE ویندوز | `artifacts/payesh2-win-static.json` (**۱۳/۱۳ PASS** — زیرسیستم GUI، آیکون، نسخه؛ اجرا NOT RUN) |
+| آزمون میزکار (مرورگر واقعی) | `docs/testing/desktop-e2e.json` — آخرین اجرای محلی NOT RUN؛ اجرا در کار CI «نسخه میزکار» |
+| ADR نصب میزکار و اعتبارنامهٔ نخستین ورود | `docs/decisions/0005-desktop-install-and-bootstrap-credentials.md` |
 | آزمون بار روی PostgreSQL واقعی | `docs/testing/load-report-real-pg-2026-10-23.json` |
 | بازیابی از پشتیبان | `docs/testing/04-real-postgres-restore.md` |
 | فراداده و هش دارایی‌ها | `artifacts/BUILD.md`, `artifacts/payesh2-*.json` |
 
-هر ادعایی که در این سند PASS دارد، در تاریخ ۲۰۲۶-۱۰-۲۳ روی همین مخزن اجرا شده است؛ ادعاهای
+هر ادعایی که در این سند PASS دارد، در تاریخ ۲۰۲۶-۱۰-۲۳ یا ۲۰۲۶-۱۰-۲۴ روی همین مخزن اجرا شده است؛ ادعاهای
 BLOCKED/NOT RUN/NOT BUILT به همین صراحت در README و سند انتشار هم تکرار شده‌اند.

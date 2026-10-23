@@ -6,6 +6,10 @@ import { hashPassword, newToken } from '../security/password.js';
  *
  * - هیچ رمز پیش‌فرض عمومی وجود ندارد: اگر ADMIN_PASSWORD تنظیم نشده باشد یک رمز
  *   تصادفی تولید و تنها یک‌بار روی خروجی فرایند چاپ می‌شود.
+ * - نسخهٔ میزکار (EXE) اعتبارنامهٔ مشخصی برای «نخستین ورود» می‌گذارد (۱۲۳۴۵۶/۱۲۳۴۵۶).
+ *   این استثنا فقط با پرچم صریح `PAYESH_ALLOW_SHORT_ADMIN_PASSWORD=1` پذیرفته می‌شود که
+ *   تنها بستهٔ میزکار آن را تنظیم می‌کند؛ سرور عمومی بدون آن هر رمز کوتاه را رد می‌کند.
+ *   حساب ساخته‌شده همیشه `must_change_password` دارد، پس رمز کوتاه فقط یک‌بار کار می‌کند.
  * - مدیر ساخته‌شده must_change_password دارد.
  * - یک مدرسه، سال تحصیلی جاری و ترم اول ساخته می‌شود تا سامانه از همان ابتدا
  *   قابل استفاده باشد (بدون مدرسه، هیچ صفحه‌ای داده‌ای ندارد).
@@ -38,8 +42,12 @@ export async function ensureFirstSetup(env: NodeJS.ProcessEnv = process.env): Pr
   const username = env.ADMIN_USERNAME?.trim() || 'admin';
   const fullName = env.ADMIN_NAME?.trim() || 'مدیر سامانه';
   const supplied = env.ADMIN_PASSWORD;
-  if (supplied && supplied.length < 10) {
+  const allowShort = env.PAYESH_ALLOW_SHORT_ADMIN_PASSWORD === '1';
+  if (supplied && supplied.length < 10 && !allowShort) {
     return { created: false, reason: 'ADMIN_PASSWORD کوتاه‌تر از ۱۰ نویسه است' };
+  }
+  if (supplied && supplied.length < 6) {
+    return { created: false, reason: 'رمز نخستین اجرا نباید کوتاه‌تر از ۶ نویسه باشد' };
   }
   const password = supplied ?? newToken(18);
 

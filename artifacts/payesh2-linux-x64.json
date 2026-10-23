@@ -1,10 +1,21 @@
 {
-  "builtAt": "2026-10-23T21:17:02.123Z",
-  "buildId": "e203064be84b",
+  "builtAt": "2026-10-23T21:50:05.756Z",
+  "buildId": "8bab4f9dbc48",
+  "version": "0.1.0",
   "target": "linux-x64",
   "nodeVersion": "26.12.1",
   "file": "payesh2",
-  "bytes": 170200256,
-  "sha256": "2fc095500f7dfeb9532cc8d095642c0aab63f839d8ca850f307c94c60feb8d2e",
-  "host": "linux-x64"
+  "bytes": 170265792,
+  "sha256": "0113b0a95863253eee0dddf3e06d4b24877d2a14b0a42aa2531a895935ad1b00",
+  "host": "linux-x64",
+  "subsystem": "CUI",
+  "consoleWindow": true,
+  "iconEmbedded": false,
+  "modes": [
+    "install",
+    "app",
+    "uninstall",
+    "server",
+    "plan"
+  ]
 }

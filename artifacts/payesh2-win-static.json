@@ -1,9 +1,13 @@
 {
-  "generatedAt": "2026-10-23T21:16:25.538Z",
+  "generatedAt": "2026-10-23T21:49:54.415Z",
   "file": "artifacts/payesh2.exe",
-  "bytes": 125291008,
-  "sha256": "2f05b558efb0af20fb2013825e44a5f47478e3aaae05288bf88200ada7c455df",
+  "bytes": 125324800,
+  "sha256": "7f16071babf9845d43d9f88885081633209c23238a3b6ebb275c757a9e98c7a9",
   "architecture": "win32-x64",
+  "subsystem": "GUI",
+  "consoleWindowOnLaunch": false,
+  "iconEmbedded": true,
+  "productName": "پایش ۲ — Payesh 2",
   "status": "PASS",
   "scope": "بازبینی ایستای فایل؛ اجرا روی ویندوز واقعی انجام نشده است (NOT RUN)",
   "checks": [
@@ -28,14 +32,44 @@
       "detail": "magic=0x20b"
     },
     {
-      "name": "زیرسیستم ویندوز معتبر است",
+      "name": "زیرسیستم GUI است (بدون پنجرهٔ کنسول در اجرای عادی)",
       "status": "PASS",
-      "detail": "CUI (کنسول)"
+      "detail": "subsystem=2 (GUI)"
     },
     {
-      "name": "نام دارایی HTML تک‌فایل داخل باندل هست",
+      "name": "آیکون در منابع فایل جاسازی شده است",
       "status": "PASS",
-      "detail": "«payesh2-standalone.html»"
+      "detail": "icon groups=1"
+    },
+    {
+      "name": "اطلاعات نسخه و نام محصول ثبت شده است",
+      "status": "PASS",
+      "detail": "«پایش ۲ — Payesh 2» v0.1"
+    },
+    {
+      "name": "دارایی «desktop.cjs» در باندل هست",
+      "status": "PASS",
+      "detail": "desktop.cjs"
+    },
+    {
+      "name": "دارایی «server.cjs» در باندل هست",
+      "status": "PASS",
+      "detail": "server.cjs"
+    },
+    {
+      "name": "دارایی «payesh2-standalone.html» در باندل هست",
+      "status": "PASS",
+      "detail": "payesh2-standalone.html"
+    },
+    {
+      "name": "دارایی «pglite.wasm» در باندل هست",
+      "status": "PASS",
+      "detail": "pglite.wasm"
+    },
+    {
+      "name": "دارایی «migrations» در باندل هست",
+      "status": "PASS",
+      "detail": "migrations"
     },
     {
       "name": "محتوای HTML تک‌فایل در فایل اجرایی جاسازی شده است",

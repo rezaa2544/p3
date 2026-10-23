@@ -12,8 +12,14 @@ const scrypt = promisify(scryptCb) as (
 const PARAMS = { N: 16384, r: 8, p: 1 };
 const KEYLEN = 64;
 
+/**
+ * کمینهٔ هش‌کردن ۶ نویسه است، نه سیاست رمز: سیاست (طول ۱۰ + حرف و رقم) در لایهٔ
+ * اعتبارسنجی API اعمال می‌شود. این نگهبان فقط ورودی بی‌معنا (خالی/چندنویسه) را
+ * نمی‌پذیرد. عدد ۶ به‌خاطر «اعتبارنامهٔ نخستین ورود» نسخهٔ میزکار است (ADR 0005) که
+ * فقط با پرچم صریح ساخته می‌شود و کاربر در اولین ورود مجبور به تغییر آن است.
+ */
 export async function hashPassword(plain: string): Promise<string> {
-  if (plain.length < 8) throw new Error('password too short');
+  if (plain.length < 6) throw new Error('password too short');
   const salt = randomBytes(16);
   const key = await scrypt(plain.normalize('NFKC'), salt, KEYLEN, PARAMS);
   return `scrypt$${PARAMS.N}$${PARAMS.r}$${PARAMS.p}$${salt.toString('base64url')}$${key.toString('base64url')}`;
