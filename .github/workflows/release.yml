@@ -1,0 +1,104 @@
+name: انتشار دارایی‌ها
+
+# چرا این کار لازم است؟
+# محیط توسعه به `uploads.github.com` دسترسی ندارد؛ پس آپلود دارایی‌های باینری در Release از
+# همان مسیر همیشه BLOCKED مانده است. رانر GitHub این دسترسی را دارد، بنابراین ساخت و آپلود
+# دارایی‌ها اینجا انجام می‌شود تا لینک‌های واقعی (نه ادعا) به دست آید.
+#
+# اجرای دستی:  gh workflow run release.yml --ref main -f tag=v0.1.0
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'برچسب انتشار (مثلاً v0.1.0)'
+        required: true
+        default: 'v0.1.0'
+      notes:
+        description: 'فایل توضیحات انتشار'
+        required: false
+        default: 'docs/releases/v0.1.0.md'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: ساخت و آپلود دارایی‌ها
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: نصب وابستگی‌ها
+        run: npm ci
+
+      - name: ساخت وب و API
+        run: npm run build
+
+      - name: ساخت HTML تک‌فایل
+        run: npm run artifact:html
+
+      - name: ساخت EXE ویندوز (SEA، زیرسیستم GUI)
+        run: npm run artifact:exe
+
+      - name: بازبینی ایستای EXE ویندوز
+        run: npm run verify:win
+
+      - name: ساخت باینری لینوکس (همان کد، برای آزمون)
+        run: npm run artifact:exe:linux
+
+      - name: بسته‌بندی و هش‌ها
+        run: node scripts/build-release-zips.mjs
+
+      - name: بررسی صحت APK ثبت‌شده در مخزن
+        run: |
+          node -e '
+          const { createHash } = require("crypto");
+          const fs = require("fs");
+          const meta = JSON.parse(fs.readFileSync("artifacts/checksums.json", "utf8")).androidApk;
+          const buf = fs.readFileSync(`artifacts/${meta.file}`);
+          const sha = createHash("sha256").update(buf).digest("hex");
+          if (sha !== meta.sha256) {
+            console.log(`::error title=apk::sha256 ناهمخوان: ${sha} != ${meta.sha256}`);
+            process.exit(1);
+          }
+          console.log(`::notice title=apk::APK سالم است (${buf.length} بایت، sha256=${sha})`);
+          '
+
+      - name: ساخت یا به‌روزرسانی انتشار
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --title "پایش ۲ — نسخه ${TAG#v}" \
+              --notes-file "${{ inputs.notes }}" --target "$GITHUB_SHA"
+          fi
+          gh release upload "$TAG" --clobber \
+            artifacts/payesh2-win-x64.zip \
+            artifacts/payesh2.exe \
+            artifacts/payesh2-standalone-html.zip \
+            artifacts/payesh2-standalone.html \
+            artifacts/payesh2-android.apk \
+            artifacts/payesh2 \
+            artifacts/checksums.json \
+            artifacts/payesh2-win-x64.json \
+            artifacts/payesh2-linux-x64.json \
+            artifacts/payesh2-win-static.json \
+            artifacts/payesh2-android.json \
+            artifacts/BUILD.md
+
+      - name: گزارش دارایی‌های منتشرشده
+        run: |
+          gh release view "$TAG" --json assets \
+            --jq '.assets[] | "\(.name) — \(.size) بایت — \(.url)"' | sed 's/^/::notice title=release asset::/'
+          gh release view "$TAG" --json url --jq .url
