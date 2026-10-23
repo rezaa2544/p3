@@ -107,12 +107,19 @@ export async function resolveAuth(req: FastifyRequest): Promise<void> {
 
   if (session.is_super_admin) {
     if (!requested) {
-      req.auth = null;
-      req.session = { id: session.session_id, csrfToken: session.csrf_token };
-      return;
+      // مدیر کل با یک عضویت (نصب تک‌مدرسه‌ای) بدون انتخاب دستی مدرسه ادامه می‌دهد؛
+      // با چند مدرسه باید مدرسه را صریح انتخاب کند تا scope مبهم نماند.
+      if (memberships.length === 1) {
+        active = { school_id: memberships[0]!.school_id, role: memberships[0]!.role };
+      } else {
+        req.auth = null;
+        req.session = { id: session.session_id, csrfToken: session.csrf_token };
+        return;
+      }
+    } else {
+      const target = memberships.find((m) => m.school_id === requested);
+      active = { school_id: requested, role: target?.role ?? ('school_admin' as Role) };
     }
-    const target = memberships.find((m) => m.school_id === requested);
-    active = { school_id: requested, role: target?.role ?? ('school_admin' as Role) };
   } else if (requested) {
     const target = memberships.find((m) => m.school_id === requested);
     if (!target) return; // مدرسه‌ای که عضویت ندارد → بدون دسترسی

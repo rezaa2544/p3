@@ -172,4 +172,41 @@ describe('کنترل دسترسی و جداسازی داده', () => {
     });
     expect(res.status).toBe(400);
   });
+
+  it('مدیر کل با یک عضویت بدون هدر مدرسه کار می‌کند، با چند مدرسه نیاز به انتخاب دارد', async () => {
+    const hash = await import('../src/security/password.js').then((m) => m.hashPassword('Test1234pass'));
+    const [solo] = await env.dbQuery<{ id: string }>(
+      'insert into users (username, password_hash, full_name, is_super_admin) values ($1,$2,$3,true) returning id',
+      ['superSolo', hash, 'مدیر کل تک‌مدرسه'],
+    );
+    await env.dbQuery('insert into memberships (user_id, school_id, role) values ($1,$2,$3)', [
+      solo!.id,
+      env.fx.schoolA,
+      'school_admin',
+    ]);
+    const login = await env.login('superSolo', 'Test1234pass');
+    const ok = await env.request('GET', '/api/schools', { auth: login });
+    expect(ok.status).toBe(200);
+    expect(ok.json.items.map((s: { id: string }) => s.id)).toContain(env.fx.schoolA);
+
+    const [multi] = await env.dbQuery<{ id: string }>(
+      'insert into users (username, password_hash, full_name, is_super_admin) values ($1,$2,$3,true) returning id',
+      ['superMulti', hash, 'مدیر کل چندمدرسه'],
+    );
+    await env.dbQuery('insert into memberships (user_id, school_id, role) values ($1,$2,$3),($1,$4,$5)', [
+      multi!.id,
+      env.fx.schoolA,
+      'school_admin',
+      env.fx.schoolB,
+      'school_admin',
+    ]);
+    const login2 = await env.login('superMulti', 'Test1234pass');
+    const ambiguous = await env.request('GET', '/api/schools', { auth: login2 });
+    expect(ambiguous.status).toBe(401);
+    const scoped = await env.request('GET', '/api/schools', {
+      auth: login2,
+      headers: { 'x-school-id': env.fx.schoolB },
+    });
+    expect(scoped.status).toBe(200);
+  });
 });
