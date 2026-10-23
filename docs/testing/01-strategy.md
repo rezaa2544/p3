@@ -73,6 +73,12 @@ units 8، migration 4، comms 6، offline 6، first-run 3، standalone 3، web-s
 - آزمون مرورگری روی فایل اجرایی واقعی: `scripts/e2e-desktop.mjs` — در CI اجرا می‌شود.
 - جزئیات و محدودیت‌ها: [`06-desktop.md`](06-desktop.md).
 
+### اندروید (APK)
+
+- ساخت و امضا در CI، بازبینی ایستا با `scripts/verify-apk.mjs` (۱۹ مورد).
+- اجرا روی دستگاه/شبیه‌ساز: **NOT RUN** (ابزار لازم در محیط ساخت نبود).
+- جزئیات: [`07-android.md`](07-android.md).
+
 ## ۵. اجرای آزمون‌ها
 
 ```bash

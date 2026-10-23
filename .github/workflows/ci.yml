@@ -203,8 +203,11 @@ jobs:
             console.log("::error title=apk::گزارش بازبینی APK پیدا نشد: " + e.message);
           }
           '
-      - name: ثبت APK و فراداده در شاخهٔ همین PR
-        if: success() && github.event_name == 'push'
+      # چرا فقط اجرای دستی؟ اگر هر push فایل APK را دوباره بسازد و کامیت کند، امضا/بایت‌ها
+      # تغییر می‌کند و هش منتشرشده در مستندات بی‌اعتبار می‌شود. پس در push فقط «می‌سازیم و
+      # بازبینی می‌کنیم» و ثبت دارایی تنها با اجرای دستی (workflow_dispatch) انجام می‌شود.
+      - name: ثبت APK و فراداده در شاخه (فقط اجرای دستی)
+        if: success() && github.event_name == 'workflow_dispatch'
         run: |
           set -euo pipefail
           node scripts/apk-meta.mjs

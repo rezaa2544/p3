@@ -28,7 +28,7 @@
 | **ویندوز x64 — برنامهٔ میزکار (ZIP)** | **[⬇ payesh2-win-x64.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip)** | ۴۴ MB | ✅ نصب per-user + میان‌بر + بدون پنجرهٔ کنسول (زیرسیستم GUI، آیکون و نسخهٔ جاسازی‌شده، بازبینی ایستای PE ۱۴/۱۴)؛ اجرا روی ویندوز واقعی **(NOT RUN)** |
 | **HTML تک‌فایل (ZIP)** | **[⬇ payesh2-standalone-html.zip](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip)** | ۱۱۵ KB | ✅ در مرورگر واقعی آزموده شد (راهنمای file:// + ورود از سرور) |
 | HTML خام (بدون ZIP) | [payesh2-standalone.html](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html) | ۳۸۵ KB | ✅ اسکریپت کلاسیک + نگهبان بوت، صفر ارجاع بیرونی |
-| اپلیکیشن اندروید (APK) | — | — | ⛔ **BLOCKED** — بدون Android SDK/JDK در محیط ساخت |
+| **اندروید (APK امضاشده)** | **[⬇ payesh2-android.apk](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-android.apk)** | ۱۴۱ KB | ✅ ساخته و امضا شد (v2+v3)، بازبینی ایستا ۱۹/۱۹ PASS؛ اجرا روی گوشی **(NOT RUN)** |
 | آدرس HTTPS عمومی | — | — | ⛔ **BLOCKED** — میزبان/دامنه در اختیار نبود؛ آدرس ساختگی اعلام نمی‌کنیم |
 | نصب‌کنندهٔ جداگانه (Setup/NSIS) | — | — | ⛔ **NOT BUILT** — همان EXE خودش نصب می‌کند (بدون UAC، بدون نصب‌کنندهٔ سوم) |
 | نسخهٔ لینوکس x64 | [ساخت محلی](artifacts/BUILD.md) | ۱۶۲ MB | ✅ ساخته و کامل آزموده شد؛ به‌دلیل حجم در گیت نیست |
@@ -36,6 +36,7 @@
 هش دقیق فایل‌ها (برای بررسی سلامت دانلود): [`artifacts/BUILD.md`](artifacts/BUILD.md)
 
 ```text
+payesh2-android.apk          83e73f12b94492dae8d18c4341608a6c4239237b7c6bf063553457e4d135e487
 payesh2-win-x64.zip          667eaaf47e42d5514225383e40d8dc8eb2eb4ebc6bcf0ffd70a3174703c2625f
 payesh2-standalone-html.zip  fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af
 payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c
@@ -68,7 +69,27 @@ payesh2-standalone.html      05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d12
 > استفاده کنید (پایین را ببینید). فایل اجرایی امضای تجاری ندارد؛ SmartScreen ممکن است هشدار
 > «ناشر ناشناس» بدهد — هش sha256 را با `artifacts/BUILD.md` مقایسه کنید.
 
-### ۲) اجرای سروری (توصیه‌شده برای تولید)
+### ۲) اندروید: نصب APK
+
+1. فایل [`payesh2-android.apk`](https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-android.apk)
+   (۱۴۱ KB) را روی گوشی/تبلت دانلود کنید.
+2. اگر اندروید هشدار «نصب از منابع ناشناس» داد، برای همین فایل اجازه بدهید
+   (اپ از Google Play نیامده و با کلید پایلوت امضا شده است).
+3. برنامه را باز کنید → نشانی سرور سامانه را وارد کنید (نمونه: `http://192.168.1.20:3000`
+   یا دامنهٔ `https://…`) → «اتصال به سرور».
+4. با همان حساب سامانهٔ وب وارد شوید؛ رابط کامل پایش ۲ داخل برنامه بارگذاری می‌شود
+   (فارسی، RTL، همان نسخهٔ وب). تغییر نشانی از منوی «تغییر نشانی سرور» ممکن است.
+
+مشخصات فنی: `ir.payesh2.app` · نسخه ۰.۱.۰ · اندروید ۷ و بالاتر (minSdk 24، targetSdk 34) ·
+حجم ۱۴۱ KB · امضای APK Signature Scheme v2+v3 · هش را با
+[`artifacts/payesh2-android.json`](artifacts/payesh2-android.json) مقایسه کنید.
+
+> محدودیت‌ها: APK روی گوشی واقعی آزموده نشده است (**NOT RUN** — نه دستگاه و نه شبیه‌ساز در
+> محیط ساخت بود). کلید امضا «پایلوت» است و در هر ساخت CI دوباره ساخته می‌شود؛ برای نصب نسخهٔ
+> جدید باید نسخهٔ قبلی حذف شود. جزئیات: [`docs/testing/07-android.md`](docs/testing/07-android.md)
+> و [`ADR 0006`](docs/decisions/0006-android-apk-strategy.md).
+
+### ۳) اجرای سروری (توصیه‌شده برای تولید)
 
 ```bash
 git clone https://github.com/rezaa2544/p3.git && cd p3
@@ -87,7 +108,7 @@ PAYESH_FIRST_ADMIN=1 node apps/api/dist/server.js
 
 راهنمای کامل (پروکسی، TLS، پشتیبان، رخدادها): [`docs/deployment/01-runbook.md`](docs/deployment/01-runbook.md)
 
-### ۳) اجرای محلی برای توسعه
+### ۴) اجرای محلی برای توسعه
 
 ```bash
 npm ci
@@ -98,7 +119,7 @@ npm run dev                      # API: 3000 ، وب: 5173
 
 ورود نمونه‌ی توسعه: `admin` / `Payesh1404a` (فقط داده‌ی دمو).
 
-### ۴) HTML تک‌فایل — چگونه درست استفاده شود
+### ۵) HTML تک‌فایل — چگونه درست استفاده شود
 
 ZIP را باز کنید و **همین فایل را از خود سرور پایش ۲ باز کنید**:
 
@@ -181,9 +202,9 @@ npm run verify:win                                           # بازبینی ا
 
 1. **استقرار اینترنتی انجام نشده**؛ آدرس HTTPS عمومی وجود ندارد (BLOCKED).
 2. **فایل اجرایی ویندوز روی ویندوز واقعی اجرا نشده** (NOT RUN)؛ همان بسته روی لینوکس اجرا شد.
-3. **APK اندروید ساخته نشده** (BLOCKED — بدون Android SDK/JDK). نصب‌کنندهٔ جداگانه لازم
-   نیست: همان `Payesh2.exe` خودش را per-user نصب می‌کند (میان‌بر، رجیستری، حذف با
-   `--uninstall`). اما اجرای این نصب روی ویندوز واقعی هنوز **NOT RUN** است.
+3. **اجرای APK روی گوشی واقعی و اجرای نصب ویندوز روی ویندوز واقعی** انجام نشده
+   (**NOT RUN**)؛ ساخت، امضا و بازبینی ایستا انجام شده است. نصب‌کنندهٔ جداگانه هم لازم نیست:
+   همان `Payesh2.exe` خودش را per-user نصب می‌کند (میان‌بر، رجیستری، حذف با `--uninstall`).
 4. آزمون E2E مرورگری و قطع واقعی شبکه **انجام شده** (۲۳/۲۳ PASS)؛ آنچه باقی است: اجرا روی
    ویندوز واقعی، آزمون بار روی PostgreSQL مدیریت‌شده و بازیابی روی سرور جداگانه.
 5. MFA فقط از طریق API فعال می‌شود؛ پیامک/ایمیل واقعی ندارد.
@@ -198,6 +219,7 @@ npm run artifact:html         # → artifacts/payesh2-standalone.html
 npm run artifact:exe          # → artifacts/payesh2.exe (ویندوز؛ روی لینوکس هم ساخته می‌شود)
 npm run verify:win            # بازبینی PE: زیرسیستم GUI، آیکون، نسخه، دارایی‌ها
 npm run artifact:exe:linux    # همان کد برای اجرای واقعی/آزمون میزکار
+npm run verify:apk            # بازبینی ایستای APK اندروید (ساختهٔ CI)
 npm run release:assets        # هر دو ZIP + checksums.json
 ```
 

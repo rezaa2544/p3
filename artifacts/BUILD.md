@@ -8,11 +8,13 @@
 |---|---|---|
 | `payesh2-win-x64.zip` (برنامهٔ میزکار ویندوز x64 + راهنمای نصب) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-win-x64.zip | ۴۴ MB |
 | `payesh2-standalone-html.zip` (HTML + راهنما) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone-html.zip | ۱۱۵ KB |
+| `payesh2-android.apk` (APK امضاشده) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-android.apk | ۱۴۱ KB |
 | `payesh2-standalone.html` (خام، بدون ZIP) | https://github.com/rezaa2544/p3/raw/main/artifacts/payesh2-standalone.html | ۳۸۵ KB |
 
 ## sha256 (بررسی سلامت دانلود)
 
 ```text
+83e73f12b94492dae8d18c4341608a6c4239237b7c6bf063553457e4d135e487  payesh2-android.apk   (۱۴۴٬۶۸۶ بایت، امضای v2+v3)
 667eaaf47e42d5514225383e40d8dc8eb2eb4ebc6bcf0ffd70a3174703c2625f  payesh2-win-x64.zip
 fc205a4e19c03ab6937e18246b149f9e7386edaed1b0fe7d66e3b0281c5e78af  payesh2-standalone-html.zip
 05b32fd11ce3cf083bf0dff0e0686f542fca2fbc8330d768d1275ae39fe32c8c  payesh2-standalone.html
@@ -41,6 +43,23 @@ Get-FileHash .\payesh2\Payesh2.exe -Algorithm SHA256
 بازبینی ایستای خودکار: `npm run verify:win` → `artifacts/payesh2-win-static.json`
 (**۱۳/۱۳ PASS**: PE32+ x64، زیرسیستم GUI، آیکون، نسخه، وجود `desktop.cjs`/`server.cjs`/
 `migrations`/`pglite.wasm`/HTML تک‌فایل).
+
+## APK اندروید
+
+APK در CI ساخته می‌شود (Android SDK در این سندباکس در دسترس نیست):
+
+```bash
+# در CI: کار «ساخت APK اندروید»
+cd apps/android && gradle --no-daemon assembleRelease
+zipalign -f -p 4 app-release-unsigned.apk aligned.apk
+apksigner sign --ks pilot.keystore --out artifacts/payesh2-android.apk aligned.apk
+node scripts/verify-apk.mjs     # ۱۹/۱۹ PASS
+```
+
+- شناسه: `ir.payesh2.app` · نسخه `0.1.0` (code 1) · minSdk 24 · targetSdk 34
+- امضا: APK Signature Scheme v2+v3 (کلید پایلوت RSA 3072، گواهی SHA-256 `99d68ace…4e49`)
+- بازبینی ایستا: `artifacts/verify-apk.json` (۱۹/۱۹ PASS) · فراداده: `artifacts/payesh2-android.json`
+- اجرا روی دستگاه: **NOT RUN**
 
 ## بازتولیدپذیری
 
