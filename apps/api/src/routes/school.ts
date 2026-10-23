@@ -48,7 +48,7 @@ export function registerSchoolRoutes(app: FastifyInstance): void {
         name: z.string().min(2).max(120).optional(),
         city: z.string().max(80).optional(),
         timezone: z.string().max(60).optional(),
-        settings: z.record(z.unknown()).optional(),
+        settings: z.record(z.string(), z.unknown()).optional(),
       }),
       req.body,
     );
