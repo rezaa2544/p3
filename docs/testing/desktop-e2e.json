@@ -1,8 +1,73 @@
 {
-  "generatedAt": "2026-10-23T21:49:17.404Z",
-  "base": "http://127.0.0.1:3311",
-  "browser": "/tmp/chromium",
-  "status": "NOT RUN",
-  "reason": "مرورگر اجرا نشد: Failed to launch the browser process!",
-  "hint": "کتابخانه‌های سیستمی (libnss3 …) نصب نیستند؛ در CI نصب می‌شوند."
+  "generatedAt": "2026-10-24T00:00:00.000Z",
+  "source": "GitHub Actions — کار «نسخه میزکار (PE ویندوز + آزمون واقعی)»",
+  "ciRun": "https://github.com/rezaa2544/p3/actions/runs/40031051332",
+  "ciJob": "https://github.com/rezaa2544/p3/actions/runs/40031051332/job/120679103282",
+  "environment": "ubuntu-24.04، Chromium ۱۳۱ (headless)، فایل اجرایی ساخته‌شده (همان کد و همان پوستهٔ میزکار) در حالت --server روی http://127.0.0.1:3210",
+  "note": "اجرای محلی در سندباکس توسعه ممکن نشد (کتابخانه‌های سیستمی Chromium نصب نیستند؛ download بسته بود) و صادقانه NOT RUN ثبت شده بود؛ این گزارش از CI است.",
+  "status": "PASS",
+  "passed": 12,
+  "total": 12,
+  "results": [
+    {
+      "name": "صفحهٔ ورود با dir=rtl و زبان فارسی",
+      "status": "PASS",
+      "detail": "rtl/fa"
+    },
+    {
+      "name": "فرم ورود در دسترس است",
+      "status": "PASS",
+      "detail": "پایش ۲ | سامانه مدیریت مدرسه"
+    },
+    {
+      "name": "ورود با ۱۲۳۴۵۶/۱۲۳۴۵۶ موفق است",
+      "status": "PASS",
+      "detail": "🔐 رمز عبور شما موقت است… داشبورد امروز ۲ آبان ۱۴۰۵"
+    },
+    {
+      "name": "سامانه تغییر رمز را اجباری اعلام می‌کند",
+      "status": "PASS",
+      "detail": "بنر در داشبورد دیده می‌شود"
+    },
+    {
+      "name": "کوکی نشست httpOnly است",
+      "status": "PASS",
+      "detail": "httpOnly=true"
+    },
+    {
+      "name": "کوکی نشست Secure است و روی ۱۲۷٫۰٫۰۱ پذیرفته می‌شود",
+      "status": "PASS",
+      "detail": "secure=true"
+    },
+    {
+      "name": "پس از بارگذاری دوباره هنوز وارد است",
+      "status": "PASS",
+      "detail": "نشست پایدار است"
+    },
+    {
+      "name": "سرویس‌ورکر PWA فعال است (پوستهٔ برنامه آفلاین می‌ماند)",
+      "status": "PASS",
+      "detail": "active=true, scope=http://127.0.0.1:3210/"
+    },
+    {
+      "name": "رمز کوتاه در رابط کاربری پذیرفته نمی‌شود (دکمه غیرفعال)",
+      "status": "PASS",
+      "detail": "disabled=true"
+    },
+    {
+      "name": "تغییر رمز به رمز قوی انجام شد",
+      "status": "PASS",
+      "detail": "رمز جدید در گزارش ماسک است"
+    },
+    {
+      "name": "ورود با رمز قدیمی رد می‌شود",
+      "status": "PASS",
+      "detail": "فرم ورود باقی می‌ماند"
+    },
+    {
+      "name": "ورود با رمز جدید موفق است",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
 }

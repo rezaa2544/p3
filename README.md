@@ -174,8 +174,8 @@ npm run verify:win                                           # بازبینی ا
 
 نتیجه‌ی آخرین اجرای ثبت‌شده (Chromium headless ۱۳۱): **۷/۷** و **۲۳/۲۳ PASS**؛ جزئیات در
 [`docs/testing/03-product-e2e.md`](docs/testing/03-product-e2e.md).
-آزمون میزکار (`npm run test:e2e:desktop`) در کار CI «نسخه میزکار» اجرا می‌شود؛ جزئیات و
-وضعیت فعلی: [`docs/testing/06-desktop.md`](docs/testing/06-desktop.md).
+آزمون میزکار روی همان فایل اجرایی: **۱۲/۱۲ PASS در CI** (کار «نسخه میزکار»، Chromium واقعی)
+— [`docs/testing/06-desktop.md`](docs/testing/06-desktop.md) و `docs/testing/desktop-e2e.json`.
 
 ## محدودیت‌های نسخه ۰.۱.۰ (صادقانه)
 
